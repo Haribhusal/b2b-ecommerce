@@ -34,6 +34,15 @@ const Sidebar = () => {
           </div>
           <div className="label">Manage Categories</div>
         </Link>
+        <Link
+          to="manage-companies"
+          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+        >
+          <div className="icon">
+            <MdDashboard />
+          </div>
+          <div className="label">Manage Companies</div>
+        </Link>
 
         <Link
           to="manage-sellers"

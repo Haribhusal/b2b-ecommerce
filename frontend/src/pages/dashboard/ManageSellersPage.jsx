@@ -5,6 +5,7 @@ import { ImSpinner3 } from "react-icons/im";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
+import { FaUserTie } from "react-icons/fa6";
 
 const ManageSellersPage = () => {
   const { data: sellers, error, isLoading, refetch } = useSellers();
@@ -45,6 +46,9 @@ const ManageSellersPage = () => {
               key={seller._id}
               className="bg-orange-50 group items-center mb-2 card p-3 rounded-md flex gap-3"
             >
+              <div className="image">
+                <FaUserTie className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" />
+              </div>
               <div className="info w-full">
                 <h2 className="text-xl font-semibold text-gray-700">
                   <Link to={`/dashboard/edit-seller/${seller._id}`}>

@@ -64,8 +64,10 @@ const ManageProductsPage = () => {
                 </h2>
                 <div className="meta flex text-gray-600 gap-1 mb-1">
                   <div className="price">Rs. {product.price}</div> |
-                  <div className="stock">{product.quantity} items in Stock</div>
-                  |<div className="stock">{product.company.name} </div> |
+                  <div className="stock">
+                    {product?.quantity} items in Stock
+                  </div>
+                  |<div className="stock">{product.company?.name} </div> |
                   <div className="stock">{product.category?.name} </div>
                 </div>
               </div>

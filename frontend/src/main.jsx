@@ -27,6 +27,9 @@ import AddCategoryPage from "./pages/dashboard/AddCategoryPage.jsx";
 import ManageSellersPage from "./pages/dashboard/ManageSellersPage.jsx";
 import EditSellerPage from "./pages/dashboard/EditSellerPage.jsx";
 import AddSellerPage from "./pages/dashboard/AddSellerPage.jsx";
+import ManageCompaniesPage from "./pages/dashboard/ManageCompaniesPage.jsx";
+import EditCompanyPage from "./pages/dashboard/EditCompanyPage.jsx";
+import AddCompanyPage from "./pages/dashboard/AddCompanyPage.jsx";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -105,6 +108,18 @@ const router = createBrowserRouter([
       {
         path: "add-seller",
         element: <AddSellerPage />,
+      },
+      {
+        path: "manage-companies",
+        element: <ManageCompaniesPage />,
+      },
+      {
+        path: "edit-company/:id",
+        element: <EditCompanyPage />,
+      },
+      {
+        path: "add-company",
+        element: <AddCompanyPage />,
       },
     ],
   },

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useCategories, useDeleteCategory } from "../../hooks/useCategories";
 import { ImSpinner3 } from "react-icons/im";
+import { MdCategory } from "react-icons/md";
+
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
@@ -44,6 +46,9 @@ const ManageCategoriesPage = () => {
               key={category._id}
               className="bg-orange-50 group items-center mb-2 card p-3 rounded-md flex gap-3"
             >
+              <div className="image">
+                <MdCategory className="text-xl text-orange-400 shadow  w-8 h-8 p-1 rounded-md bg-white" />
+              </div>
               <div className="info w-full">
                 <h2 className="text-xl font-semibold text-gray-700">
                   {category.name}

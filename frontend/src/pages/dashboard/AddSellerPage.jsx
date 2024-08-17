@@ -48,7 +48,8 @@ const AddSellerPage = () => {
 
   return (
     <div className="p-5">
-      <h3 className="text-xl mb-4">Add New Seller</h3>
+      <div className="heading title text-xl">Add New Seller</div>
+      <hr className="my-3" />
       <form onSubmit={formik.handleSubmit} className="space-y-4">
         {/* Name */}
         <div className="form-group">
@@ -95,23 +96,6 @@ const AddSellerPage = () => {
           />
           {formik.errors.password && (
             <div className="error">{formik.errors.password}</div>
-          )}
-        </div>
-
-        {/* Role */}
-        <div className="form-group">
-          <label htmlFor="role">Role</label>
-          <select
-            id="role"
-            name="role"
-            onChange={formik.handleChange}
-            value={formik.values.role}
-          >
-            <option value="seller">Seller</option>
-            <option value="admin">Admin</option>
-          </select>
-          {formik.errors.role && (
-            <div className="error">{formik.errors.role}</div>
           )}
         </div>
 

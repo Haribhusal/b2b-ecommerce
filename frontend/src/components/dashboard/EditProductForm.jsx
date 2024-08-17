@@ -54,8 +54,8 @@ const ProductEditForm = ({ id }) => {
         name: product.name,
         price: product.price,
         description: product.description,
-        category: product.category._id,
-        company: product.company._id,
+        category: product.category?._id,
+        company: product.company?._id,
         quantity: product.quantity,
       });
     }
