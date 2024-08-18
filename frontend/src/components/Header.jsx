@@ -1,17 +1,24 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { FaCartShopping } from "react-icons/fa6";
+import { useLogoutUser } from "./../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { formatPrice } from "./../utils/formatPrice";
 
 const Header = () => {
   const token = localStorage.getItem("token");
+  const handleLogout = useLogoutUser();
+  const { totalQuantity, totalPrice } = useSelector((state) => state.cart);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const logOut = () => {
+    handleLogout();
+    // localStorage.removeItem("token");
   };
 
   useEffect(() => {}, [token]);
 
   return (
-    <header className="flex justify-between items-center max-w-screen-2xl px-3 md:px-10 shadow-md ">
+    <header className="flex border-t-2 border-orange-500  justify-between sticky top-0 bg-white z-40 shadow-sm items-center max-w-screen-2xl px-3 md:px-10  ">
       <div className=" link text-2xl py-3 font-semibold">
         <Link className="" to="/">
           Bizquest
@@ -31,13 +38,20 @@ const Header = () => {
       <div className="buttons flex gap-3 items-center">
         {token ? (
           <>
+            <Link className="link relative flex gap-1 items-center" to="/cart">
+              <FaCartShopping />
+              <span className="absolute -top-3 -left-2  bg-orange-500/90 text-white text-sm px-1 rounded-sm">
+                {totalQuantity}
+              </span>
+              <span>Rs.{formatPrice(totalPrice)}</span>
+            </Link>
             <Link className="link" to="/dashboard">
               Dashboard
             </Link>
             {/* <Link className="link" to="/profile">
               Profile
             </Link> */}
-            <button className="btn btn-bordered" onClick={handleLogout}>
+            <button className="btn btn-bordered" onClick={logOut}>
               Logout
             </button>
           </>

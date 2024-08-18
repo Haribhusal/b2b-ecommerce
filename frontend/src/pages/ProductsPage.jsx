@@ -6,7 +6,7 @@ const ProductsPage = () => {
     <>
       <section>
         <div className="">
-          <div className="page-heading bg-orange-50 px-3  md:px-10 py-2">
+          <div className="page-heading  shadow-inner bg-white px-3  md:px-10 py-2">
             <h3 className="text-xl  text-orange-500">Products</h3>
           </div>
           <ProductsList />

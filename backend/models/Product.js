@@ -15,6 +15,15 @@ const productSchema = new mongoose.Schema(
       required: [true, "Please add a product price"],
       min: [0, "Price cannot be less than zero"],
     },
+    discountType: {
+      type: String,
+      enum: ["flat", "percentage", null],
+      default: null,
+    },
+    discountValue: {
+      type: Number,
+      default: 0,
+    },
     quantity: {
       type: Number,
       required: [true, "Please add a product quantity"],
@@ -35,9 +44,27 @@ const productSchema = new mongoose.Schema(
       ref: "Company", // Reference to the Company model
       required: [true, "Path `company` is required."],
     },
+    finalPrice: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );
+
+productSchema.pre("save", function (next) {
+  if (this.discountType === "flat") {
+    this.finalPrice = Math.max(this.price - this.discountValue, 0);
+  } else if (this.discountType === "percentage") {
+    this.finalPrice = this.price - (this.price * this.discountValue) / 100;
+  } else {
+    this.finalPrice = this.price;
+  }
+
+  // Ensure finalPrice does not go below 0
+  this.finalPrice = Math.max(Math.round(this.finalPrice), 0);
+
+  next();
+});
 
 const Product = mongoose.model("Product", productSchema);
 

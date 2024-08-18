@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useUpdateProduct } from "../../hooks/dashboard/useUpdateProduct";
+import { useUpdateProduct } from "../../hooks/useProducts";
 import { useProduct } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useCompanies } from "../../hooks/useCompanies";

@@ -54,7 +54,6 @@ const registerSeller = asyncHandler(async (req, res) => {
 // @route   GET /api/sellers/verify/:token
 // @access  Public
 const verifySeller = asyncHandler(async (req, res) => {
-  console.log(req.params.token);
   const verificationToken = crypto
     .createHash("sha256")
     .update(req.params.token)

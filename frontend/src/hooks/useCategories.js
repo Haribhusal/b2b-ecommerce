@@ -1,10 +1,24 @@
 // src/hooks/useCategories.js
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+const BASE_URL = "http://localhost:5000/api";
+const getAuthHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("token")}`, // Retrieve token from localStorage
+});
+
+// Reusable error handler
+const handleErrorResponse = async (response) => {
+  const errorData = await response.json();
+  throw new Error(errorData.message || "An error occurred");
+};
+
+// Fetch all categories
 const fetchCategories = async () => {
-  const response = await fetch("http://localhost:5000/api/categories/");
+  const response = await fetch(`${BASE_URL}/categories`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    await handleErrorResponse(response);
   }
   return response.json();
 };
@@ -13,16 +27,17 @@ export const useCategories = () => {
   return useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-    staleTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1000 * 60 * 10, // Cache data for 10 minutes
   });
 };
 
+// Fetch a single category by ID
 const fetchCategoryById = async (categoryId) => {
-  const response = await fetch(
-    `http://localhost:5000/api/categories/${categoryId}`
-  );
+  const response = await fetch(`${BASE_URL}/categories/${categoryId}`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    await handleErrorResponse(response);
   }
   return response.json();
 };
@@ -31,26 +46,25 @@ export const useCategory = (categoryId) => {
   return useQuery({
     queryKey: ["category", categoryId],
     queryFn: () => fetchCategoryById(categoryId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    enabled: !!categoryId, // Only fetch if productId is provided
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    enabled: !!categoryId, // Only fetch if categoryId is provided
   });
 };
 
+// Update a category by ID
 const updateCategoryById = async ({ id, ...categoryData }) => {
-  const response = await fetch(`http://localhost:5000/api/categories/${id}`, {
+  const response = await fetch(`${BASE_URL}/categories/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(categoryData),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to update the category");
+    await handleErrorResponse(response);
   }
-
   return response.json();
 };
 
@@ -60,8 +74,7 @@ export const useUpdateCategory = () => {
   return useMutation({
     mutationFn: updateCategoryById,
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
-      console.log("Category updated successfully");
+      queryClient.invalidateQueries(["categories"]); // Invalidate categories query to refetch data
     },
     onError: (error) => {
       console.error("Error updating category:", error);
@@ -69,19 +82,16 @@ export const useUpdateCategory = () => {
   });
 };
 
+// Delete a category by ID
 const deleteCategoryById = async (id) => {
-  const response = await fetch(`http://localhost:5000/api/categories/${id}`, {
+  const response = await fetch(`${BASE_URL}/categories/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to delete the category");
+    await handleErrorResponse(response);
   }
-
   return response.json();
 };
 
@@ -91,8 +101,7 @@ export const useDeleteCategory = () => {
   return useMutation({
     mutationFn: deleteCategoryById,
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
-      console.log("Category deleted successfully");
+      queryClient.invalidateQueries(["categories"]); // Invalidate categories query to refetch data
     },
     onError: (error) => {
       console.error("Error deleting category:", error);
@@ -100,21 +109,20 @@ export const useDeleteCategory = () => {
   });
 };
 
+// Add a new category
 const addCategory = async (categoryData) => {
-  const response = await fetch("http://localhost:5000/api/categories", {
+  const response = await fetch(`${BASE_URL}/categories`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(categoryData),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to add the category");
+    await handleErrorResponse(response);
   }
-
   return response.json();
 };
 
@@ -124,8 +132,7 @@ export const useAddCategory = () => {
   return useMutation({
     mutationFn: addCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
-      console.log("Category added successfully");
+      queryClient.invalidateQueries(["categories"]); // Invalidate categories query to refetch data
     },
     onError: (error) => {
       console.error("Error adding category:", error);

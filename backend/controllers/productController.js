@@ -5,13 +5,24 @@ const asyncHandler = require("express-async-handler");
 // @route   POST /api/products
 // @access  Private/Seller
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, quantity, category, company } = req.body;
+  const {
+    name,
+    description,
+    price,
+    quantity,
+    discountType,
+    discountValue,
+    category,
+    company,
+  } = req.body;
 
   const product = new Product({
     name,
     description,
     price,
     quantity,
+    discountType,
+    discountValue,
     category,
     company,
     user: req.user._id, // Assuming the seller's ID is stored in req.user
@@ -50,19 +61,28 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Seller
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, quantity, category, company } = req.body;
-  console.log(req.body);
+  const {
+    name,
+    description,
+    price,
+    quantity,
+    discountType,
+    discountValue,
+    category,
+    company,
+  } = req.body;
   const productId = req.params.id;
 
   // Find the existing product
   const product = await Product.findById(productId);
-
 
   if (product) {
     // Update product fields
     product.name = name || product.name;
     product.description = description || product.description;
     product.price = price || product.price;
+    product.discountType = discountType || product.discountType;
+    product.discountValue = discountValue || product.discountValue;
     product.quantity = quantity || product.quantity;
     product.category = category || product.category;
     product.company = company || product.company;

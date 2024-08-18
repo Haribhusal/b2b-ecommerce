@@ -114,8 +114,7 @@ const EditSellerPage = () => {
         </div>
 
         {/* Verified */}
-        <div className="form-group">
-          <label htmlFor="isVerified">Verified</label>
+        <div className="flex items-start gap-1">
           <input
             id="isVerified"
             name="isVerified"
@@ -123,11 +122,11 @@ const EditSellerPage = () => {
             onChange={formik.handleChange}
             checked={formik.values.isVerified}
           />
+          <label htmlFor="isVerified">Verified</label>
         </div>
 
         {/* Approved */}
-        <div className="form-group">
-          <label htmlFor="isApproved">Approved</label>
+        <div className="flex items-start gap-1">
           <input
             id="isApproved"
             name="isApproved"
@@ -135,6 +134,7 @@ const EditSellerPage = () => {
             onChange={formik.handleChange}
             checked={formik.values.isApproved}
           />
+          <label htmlFor="isApproved">Approved</label>
         </div>
 
         {/* Submit Button */}

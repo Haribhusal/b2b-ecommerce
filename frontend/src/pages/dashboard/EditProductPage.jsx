@@ -3,7 +3,6 @@ import ProductEditForm from "./../../components/dashboard/EditProductForm";
 import { useParams } from "react-router-dom";
 const EditProductPage = () => {
   const params = useParams();
-  console.log(params);
   //   const { id } = useParams();
   return (
     <>

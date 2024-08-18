@@ -54,7 +54,7 @@ const Sidebar = () => {
           <div className="label">Manage Sellers</div>
         </Link>
         <Link
-          to="orders"
+          to="manage-orders"
           className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
         >
           <div className="icon">

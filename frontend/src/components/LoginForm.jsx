@@ -1,10 +1,11 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useLoginUser } from "../hooks/useLoginUser";
+import { useLoginUser } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
+import { FaAngleRight } from "react-icons/fa6";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -17,15 +18,7 @@ const validationSchema = Yup.object({
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const {
-    mutate: loginUser,
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-    data,
-  } = useLoginUser();
-
+  const { mutate: loginUser, isLoading, isError, error } = useLoginUser();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -81,12 +74,13 @@ const LoginForm = () => {
       </div>
 
       <button
-        className="btn btn-primary flex gap-3 items-center"
+        className="btn btn-primary flex gap-2 items-center"
         type="submit"
         disabled={isLoading}
       >
+        {isLoading}
         Login
-        {isLoading && <ImSpinner3 className="animate-spin" />}
+        {isLoading ? <ImSpinner3 className="animate-spin" /> : <FaAngleRight />}
       </button>
 
       {isError && <div className="error">Error: {error.message}</div>}

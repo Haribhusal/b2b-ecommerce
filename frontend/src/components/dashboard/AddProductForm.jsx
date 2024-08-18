@@ -1,30 +1,33 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useAddProduct } from "../../hooks/dashboard/useAddProduct";
+import { useAddProduct } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useCompanies } from "../../hooks/useCompanies";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
-import Loader from "./../../components/Loader";
+import Loader from "../../components/Loader";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Product name is required"),
   price: Yup.number()
     .min(0, "Price must be a positive number")
     .required("Price is required"),
+  discountType: Yup.string()
+    .oneOf(["flat", "percentage", ""], "Invalid discount type")
+    .nullable(),
+  discountValue: Yup.number().required("Discount value is required").nullable(),
   description: Yup.string().required("Description is required"),
   category: Yup.string().required("Category is required"),
   company: Yup.string().required("Company is required"),
   quantity: Yup.number()
     .min(0, "Quantity must be a positive number")
-    .required("Please add a product quantity"),
+    .required("Quantity is required"),
 });
 
 const ProductAddForm = () => {
   const navigate = useNavigate();
-
   const { mutate: addProduct, isLoading, isError, error } = useAddProduct();
   const {
     data: categories,
@@ -42,22 +45,38 @@ const ProductAddForm = () => {
       name: "",
       price: "",
       description: "",
+      discountType: "", // Discount type
+      discountValue: "", // Discount value
       category: "",
       company: "",
       quantity: "",
     },
     validationSchema,
     onSubmit: (values) => {
-      addProduct(values, {
-        onSuccess: () => {
-          toast.success("Product added successfully");
-          formik.resetForm();
-          navigate("/dashboard/manage-products");
-        },
-        onError: (error) => {
-          toast.error(error.message || "An error occurred");
-        },
-      });
+      const { price, discountType, discountValue } = values;
+
+      let finalPrice = price;
+      if (discountType === "flat") {
+        finalPrice -= discountValue;
+      } else if (discountType === "percentage") {
+        finalPrice -= (price * discountValue) / 100;
+      }
+
+      finalPrice = Math.max(finalPrice, 0);
+
+      addProduct(
+        { ...values, finalPrice },
+        {
+          onSuccess: () => {
+            toast.success("Product added successfully");
+            formik.resetForm();
+            navigate("/dashboard/manage-products");
+          },
+          onError: (error) => {
+            toast.error(error.message || "An error occurred");
+          },
+        }
+      );
     },
   });
 
@@ -103,6 +122,44 @@ const ProductAddForm = () => {
           <div className="error">{formik.errors.price}</div>
         )}
       </div>
+
+      {/* Discount Type */}
+      <div className="form-group">
+        <label htmlFor="discountType">Discount Type</label>
+        <select
+          id="discountType"
+          name="discountType"
+          onChange={formik.handleChange}
+          value={formik.values.discountType}
+        >
+          <option value="">No Discount</option>
+          <option value="flat">Flat Amount</option>
+          <option value="percentage">Percentage</option>
+        </select>
+        {formik.errors.discountType && (
+          <div className="error">{formik.errors.discountType}</div>
+        )}
+      </div>
+
+      {/* Discount Value */}
+      {formik.values.discountType && (
+        <div className="form-group">
+          <label htmlFor="discountValue">Discount Value</label>
+          <input
+            id="discountValue"
+            name="discountValue"
+            type="number"
+            placeholder={`Enter discount value ${
+              formik.values.discountType === "percentage" ? "%" : "Rs"
+            }`}
+            onChange={formik.handleChange}
+            value={formik.values.discountValue}
+          />
+          {formik.errors.discountValue && (
+            <div className="error">{formik.errors.discountValue}</div>
+          )}
+        </div>
+      )}
 
       {/* Description */}
       <div className="form-group">

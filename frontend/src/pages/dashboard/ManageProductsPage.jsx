@@ -1,10 +1,9 @@
 // src/pages/dashboard/ManageProductsPage.jsx
 import React from "react";
-import { useProducts } from "../../hooks/useProducts";
+import { useProducts, useDeleteProduct } from "../../hooks/useProducts";
 import { Link } from "react-router-dom";
 import { ImSpinner3 } from "react-icons/im";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useDeleteProduct } from "../../hooks/useDeleteProduct";
 import toast from "react-hot-toast";
 import { AiFillProduct } from "react-icons/ai";
 import Loader from "./../../components/Loader";
@@ -20,7 +19,6 @@ const ManageProductsPage = () => {
   } = useDeleteProduct();
 
   const handleDelete = (productId) => {
-    console.log("Deleting product with ID:", productId);
     deleteProduct(productId, {
       onSuccess: () => {
         toast.success("Product deleted successfully");

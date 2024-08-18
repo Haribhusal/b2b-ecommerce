@@ -1,11 +1,10 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import App from "./App.jsx";
 import "./index.css";
+import store from "./store.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ErrorBoundary from "./components/ErrorBoundary.jsx"; // Import the ErrorBoundary component
-
+import { Provider } from "react-redux";
 import RootLayout from "./layouts/RootLayout.jsx";
 import ErrorPage from "./layouts/ErrorPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
@@ -30,6 +29,8 @@ import AddSellerPage from "./pages/dashboard/AddSellerPage.jsx";
 import ManageCompaniesPage from "./pages/dashboard/ManageCompaniesPage.jsx";
 import EditCompanyPage from "./pages/dashboard/EditCompanyPage.jsx";
 import AddCompanyPage from "./pages/dashboard/AddCompanyPage.jsx";
+import ManageOrdersPage from "./pages/dashboard/ManageOrdersPage.jsx";
+import CartPage from "./pages/CartPage.jsx";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: "/categories",
         element: <CategoriesPage />,
+      },
+      {
+        path: "/cart",
+        element: <CartPage />,
       },
     ],
   },
@@ -121,14 +126,20 @@ const router = createBrowserRouter([
         path: "add-company",
         element: <AddCompanyPage />,
       },
+      {
+        path: "manage-orders",
+        element: <ManageOrdersPage />,
+      },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </ErrorBoundary>
+  <Provider store={store}>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ErrorBoundary>
+  </Provider>
 );
