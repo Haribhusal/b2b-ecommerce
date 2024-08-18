@@ -1,20 +1,23 @@
 import { useDispatch, useSelector } from "react-redux";
-import { FaAngleLeft, FaAngleRight, FaTrash } from "react-icons/fa";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { FaAngleLeft, FaAngleRight, FaTrash } from "react-icons/fa";
+import { formatPrice } from "../utils/formatPrice";
 import {
   increaseQuantity,
   decreaseQuantity,
   setQuantity,
   removeFromCart,
 } from "../features/cartSlice";
-import { formatPrice } from "../utils/formatPrice"; // Import the formatPrice utility
+import { useAddOrder } from "../hooks/useOrders"; // Import useAddOrder hook
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const { cartItems, totalQuantity, totalPrice } = useSelector(
     (state) => state.cart
   );
+
+  const { mutate: createOrder } = useAddOrder(); // Destructure mutate function from useAddOrder
 
   const validationSchema = Yup.object().shape({
     quantity: Yup.number()
@@ -25,6 +28,7 @@ const CartPage = () => {
   const paymentSchema = Yup.object().shape({
     paymentMethod: Yup.string().required("Please select a payment method"),
   });
+
   const handleQuantityChange = (productId, quantity) => {
     dispatch(setQuantity({ productId, quantity: parseInt(quantity) }));
   };
@@ -34,26 +38,27 @@ const CartPage = () => {
   };
 
   const handleSubmit = (values) => {
-    switch (values.paymentMethod) {
-      case "esewa":
-        // Handle Esewa payment
-        console.log("Proceeding with Esewa payment...");
-        break;
-      case "khalti":
-        // Handle Khalti payment
-        console.log("Proceeding with Khalti payment...");
-        break;
-      case "bankTransfer":
-        // Show bank details
-        console.log("Proceeding with Bank Transfer...");
-        break;
-      case "cod":
-        // Handle Cash on Delivery
-        console.log("Proceeding with Cash on Delivery...");
-        break;
-      default:
-        break;
-    }
+    const orderData = {
+      items: cartItems.map((item) => ({
+        product: item._id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.finalPrice,
+      })),
+      totalItems: totalQuantity,
+      totalPrice: totalPrice,
+      paymentMethod: values.paymentMethod,
+    };
+
+    createOrder(orderData, {
+      onSuccess: () => {
+        console.log("Order placed successfully!");
+        // Optionally, you can clear the cart or redirect to another page
+      },
+      onError: (error) => {
+        console.error("Error placing order:", error);
+      },
+    });
   };
 
   return (
@@ -73,11 +78,10 @@ const CartPage = () => {
                     className="btn text-gray-500 btn-bordered p-2"
                     onClick={() => handleRemoveFromCart(product._id)}
                   >
-                    <FaTrash className="" />
+                    <FaTrash />
                   </button>
-
                   <div className="detail">
-                    <h3 className="font-semibold  text-xl">{product.name}</h3>
+                    <h3 className="font-semibold text-xl">{product.name}</h3>
                     <span className="text-sm">
                       {product.category?.name} | {product.company?.name}
                     </span>
@@ -125,10 +129,10 @@ const CartPage = () => {
                     )}
                   </Formik>
                 </div>
-                <div className="price flex gap-5  items-center justify-end text-end">
-                  <div className="">
+                <div className="price flex gap-5 items-center justify-end text-end">
+                  <div>
                     <h3 className="title text-2xl">
-                      Rs. {formatPrice(product.price * product.quantity)}
+                      Rs. {formatPrice(product.finalPrice * product.quantity)}
                     </h3>
                     <div className="calc">
                       {product.quantity} X Rs. {formatPrice(product.price)}
@@ -142,13 +146,13 @@ const CartPage = () => {
           )}
         </div>
       </div>
-      <div className="list bg-white  p-5 shadow-md rounded-md w-full md:w-1/4">
+      <div className="list bg-white p-5 shadow-md rounded-md w-full md:w-1/4">
         <div className="heading">
           <h3 className="title text-2xl">Cart Total</h3>
-          <hr className="my-3 " />
+          <hr className="my-3" />
           <div className="summary">
             <p>Total Items: {totalQuantity}</p>
-            <p>Total Price: {formatPrice(totalPrice)}</p>
+            <p>Total Price: Rs. {formatPrice(totalPrice)}</p>
           </div>
           <div className="payment_method">
             <Formik
@@ -167,8 +171,6 @@ const CartPage = () => {
                       <option value="" disabled>
                         Select Payment Method
                       </option>
-                      <option value="esewa">Esewa</option>
-                      <option value="khalti">Khalti</option>
                       <option value="bankTransfer">Bank Transfer</option>
                       <option value="cod">Cash on Delivery</option>
                     </Field>
@@ -179,7 +181,6 @@ const CartPage = () => {
                     />
                   </div>
 
-                  {/* Conditional rendering based on payment method */}
                   {values.paymentMethod === "bankTransfer" && (
                     <div className="bank-details">
                       <h4 className="font-semibold text-lg">
@@ -192,8 +193,8 @@ const CartPage = () => {
                     </div>
                   )}
 
-                  <button type="submit" className="btn btn-primary px-5 py-3">
-                    Proceed to Checkout
+                  <button type="submit" className="btn btn-primary px-5 py-2">
+                    Place Order
                   </button>
                 </Form>
               )}
