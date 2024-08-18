@@ -6,9 +6,14 @@ import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
 import { FaUserTie } from "react-icons/fa6";
+import { MdEmail } from "react-icons/md";
+import { FaAddressCard } from "react-icons/fa";
+import { FcApproval } from "react-icons/fc";
+import { FcDisapprove } from "react-icons/fc";
 
 const ManageSellersPage = () => {
   const { data: sellers, error, isLoading, refetch } = useSellers();
+  console.log(sellers);
   const {
     mutate: deleteSeller,
     isLoading: deleteLoading,
@@ -42,10 +47,7 @@ const ManageSellersPage = () => {
       <section>
         <ul>
           {sellers.map((seller) => (
-            <li
-              key={seller._id}
-              className="bg-orange-50 group items-center mb-2 card p-3 rounded-md flex gap-3"
-            >
+            <li key={seller._id} className="card">
               <div className="image">
                 <FaUserTie className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" />
               </div>
@@ -56,8 +58,40 @@ const ManageSellersPage = () => {
                   </Link>
                 </h2>
                 <div className="meta flex text-gray-600 gap-1 mb-1">
-                  <div className="email">{seller.email}</div> |
-                  <div className="role">{seller.role}</div>
+                  <div className="tag">
+                    <MdEmail />
+                    {seller.email}
+                  </div>{" "}
+                  <div className="tag">
+                    <FaAddressCard />
+                    {seller.role}
+                  </div>
+                  <div className="stat">
+                    {seller.isVerified ? (
+                      <div className="tag">
+                        <FcApproval />
+                        Verified
+                      </div>
+                    ) : (
+                      <div className="tag">
+                        <FcDisapprove />
+                        Not Verified
+                      </div>
+                    )}
+                  </div>
+                  <div className="stat">
+                    {seller.isApproved ? (
+                      <div className="tag">
+                        <FcApproval />
+                        Approved
+                      </div>
+                    ) : (
+                      <div className="tag">
+                        <FcDisapprove />
+                        Not Approved
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex gap-3 items-center">

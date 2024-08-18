@@ -160,7 +160,7 @@ const updateSeller = asyncHandler(async (req, res) => {
 });
 
 const deleteSeller = asyncHandler(async (req, res) => {
-  const seller = await Seller.findById(req.params.id);
+  const seller = await User.findById(req.params.id);
 
   if (!seller) {
     res.status(404);
@@ -171,6 +171,7 @@ const deleteSeller = asyncHandler(async (req, res) => {
 
   res.json({ message: "Seller deleted successfully" });
 });
+
 const addSeller = asyncHandler(async (req, res) => {
   const { name, email, password, role, isVerified, isApproved } = req.body;
 

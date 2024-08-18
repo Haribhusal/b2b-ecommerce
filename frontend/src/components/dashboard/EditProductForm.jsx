@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useUpdateProduct } from "../../hooks/useProducts";
-import { useProduct } from "../../hooks/useProducts";
+import { useUpdateProduct, useProduct } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useCompanies } from "../../hooks/useCompanies";
 import toast from "react-hot-toast";
@@ -15,6 +14,10 @@ const validationSchema = Yup.object({
   price: Yup.number()
     .min(0, "Price must be a positive number")
     .required("Price is required"),
+  discountType: Yup.string()
+    .oneOf(["flat", "percentage", ""], "Invalid discount type")
+    .nullable(),
+  discountValue: Yup.number().required("Discount value is required").nullable(),
   description: Yup.string().required("Description is required"),
   category: Yup.string().required("Category is required"),
   company: Yup.string().required("Company is required"),
@@ -54,6 +57,8 @@ const ProductEditForm = ({ id }) => {
         name: product.name,
         price: product.price,
         description: product.description,
+        discountType: product.discountType || "",
+        discountValue: product.discountValue || "",
         category: product.category?._id,
         company: product.company?._id,
         quantity: product.quantity,
@@ -66,6 +71,8 @@ const ProductEditForm = ({ id }) => {
       name: "",
       price: "",
       description: "",
+      discountType: "", // Discount type
+      discountValue: "", // Discount value
       category: "",
       company: "",
       quantity: "",
@@ -73,8 +80,19 @@ const ProductEditForm = ({ id }) => {
     validationSchema,
     enableReinitialize: true, // Reinitialize form values when product data changes
     onSubmit: (values) => {
+      const { price, discountType, discountValue } = values;
+
+      let finalPrice = price;
+      if (discountType === "flat") {
+        finalPrice -= discountValue;
+      } else if (discountType === "percentage") {
+        finalPrice -= (price * discountValue) / 100;
+      }
+
+      finalPrice = Math.max(finalPrice, 0);
+
       updateProduct(
-        { id, ...values },
+        { id, ...values, finalPrice },
         {
           onSuccess: () => {
             toast.success("Product updated successfully");
@@ -133,6 +151,44 @@ const ProductEditForm = ({ id }) => {
           <div className="error">{formik.errors.price}</div>
         )}
       </div>
+
+      {/* Discount Type */}
+      <div className="form-group">
+        <label htmlFor="discountType">Discount Type</label>
+        <select
+          id="discountType"
+          name="discountType"
+          onChange={formik.handleChange}
+          value={formik.values.discountType}
+        >
+          <option value="">No Discount</option>
+          <option value="flat">Flat Amount</option>
+          <option value="percentage">Percentage</option>
+        </select>
+        {formik.errors.discountType && (
+          <div className="error">{formik.errors.discountType}</div>
+        )}
+      </div>
+
+      {/* Discount Value */}
+      {formik.values.discountType && (
+        <div className="form-group">
+          <label htmlFor="discountValue">Discount Value</label>
+          <input
+            id="discountValue"
+            name="discountValue"
+            type="number"
+            placeholder={`Enter discount value ${
+              formik.values.discountType === "percentage" ? "%" : "Rs"
+            }`}
+            onChange={formik.handleChange}
+            value={formik.values.discountValue}
+          />
+          {formik.errors.discountValue && (
+            <div className="error">{formik.errors.discountValue}</div>
+          )}
+        </div>
+      )}
 
       {/* Description */}
       <div className="form-group">

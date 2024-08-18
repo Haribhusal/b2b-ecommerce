@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const BASE_URL = "http://localhost:5000/api";
+
 const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
 });
@@ -25,7 +26,9 @@ export const useOrders = () => {
   return useQuery({
     queryKey: ["orders"],
     queryFn: fetchOrders,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10, // Extended staleTime to reduce frequent refetching
+    cacheTime: 1000 * 60 * 30, // Cached for 30 minutes
+    retry: 1, // Retry failed requests once
   });
 };
 
@@ -44,8 +47,10 @@ export const useOrder = (orderId) => {
   return useQuery({
     queryKey: ["order", orderId],
     queryFn: () => fetchOrderById(orderId),
-    staleTime: 1000 * 60 * 5,
-    enabled: !!orderId,
+    staleTime: 1000 * 60 * 10, // Extended staleTime for individual order
+    cacheTime: 1000 * 60 * 30,
+    enabled: !!orderId, // Fetch only if orderId is available
+    retry: 1,
   });
 };
 
@@ -72,7 +77,10 @@ export const useAddOrder = () => {
   return useMutation({
     mutationFn: addOrder,
     onSuccess: () => {
-      queryClient.invalidateQueries(["orders"]);
+      queryClient.invalidateQueries(["orders"]); // Invalidate the orders query after a successful mutation
+    },
+    onError: (error) => {
+      console.error("Error creating order:", error);
     },
   });
 };
@@ -101,6 +109,7 @@ export const useUpdateOrder = () => {
     mutationFn: updateOrderById,
     onSuccess: () => {
       queryClient.invalidateQueries(["orders"]);
+      queryClient.invalidateQueries(["order"]);
     },
     onError: (error) => {
       console.error("Error updating order:", error);
@@ -119,14 +128,54 @@ const deleteOrderById = async (orderId) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete the order");
+    await handleErrorResponse(response);
   }
 
   return response.json(); // Assuming your API returns a JSON response after deletion
 };
 
 export const useDeleteOrder = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteOrderById,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["orders"]);
+    },
+    onError: (error) => {
+      console.error("Error deleting order:", error);
+    },
+  });
+};
+
+// Update an order by ID, including status
+const updateOrderStatus = async ({ id, ...orderData }) => {
+  const response = await fetch(`${BASE_URL}/orders/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  if (!response.ok) {
+    await handleErrorResponse(response);
+  }
+  return response.json();
+};
+
+// Usage example to update status
+export const useUpdateOrderStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateOrderStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["orders"]);
+    },
+    onError: (error) => {
+      console.error("Error updating order:", error);
+    },
   });
 };

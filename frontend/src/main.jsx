@@ -15,7 +15,7 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx"; // Import ProtectedRoute
-
+import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
 // Dashboard Page
 import ManageProductsPage from "./pages/dashboard/ManageProductsPage.jsx";
 import ManageCategoriesPage from "./pages/dashboard/ManageCategoriesPage.jsx";
@@ -31,6 +31,8 @@ import EditCompanyPage from "./pages/dashboard/EditCompanyPage.jsx";
 import AddCompanyPage from "./pages/dashboard/AddCompanyPage.jsx";
 import ManageOrdersPage from "./pages/dashboard/ManageOrdersPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
+import EditOrderPage from "./pages/dashboard/EditOrderPage.jsx";
+import OrderDetailsPage from "./pages/dashboard/OrderDetailsPage.jsx";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -67,6 +69,10 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         element: <CartPage />,
+      },
+      {
+        path: "/order-success",
+        element: <OrderSuccessPage />,
       },
     ],
   },
@@ -129,6 +135,14 @@ const router = createBrowserRouter([
       {
         path: "manage-orders",
         element: <ManageOrdersPage />,
+      },
+      {
+        path: "edit-order/:id",
+        element: <EditOrderPage />,
+      },
+      {
+        path: "order-details/:id",
+        element: <OrderDetailsPage />,
       },
     ],
   },

@@ -60,7 +60,7 @@ const Sidebar = () => {
           <div className="icon">
             <MdDashboard />
           </div>
-          <div className="label">Orders</div>
+          <div className="label">Manage Orders</div>
         </Link>
         <Link
           to="reports"

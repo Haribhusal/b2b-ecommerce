@@ -6,6 +6,10 @@ import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { FaBuildingWheat } from "react-icons/fa6";
+import { MdEmail } from "react-icons/md";
+import { FaMap } from "react-icons/fa6";
+import { FaPhone } from "react-icons/fa6";
+import { TbRosetteDiscount } from "react-icons/tb";
 
 const ManageCompaniesPage = () => {
   const navigate = useNavigate();
@@ -40,10 +44,7 @@ const ManageCompaniesPage = () => {
       <section>
         <ul>
           {companies.map((company) => (
-            <li
-              key={company._id}
-              className="bg-orange-50 group items-center mb-2 card p-3 rounded-md flex gap-3"
-            >
+            <li key={company._id} className="card">
               <div className="image">
                 <FaBuildingWheat className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" />
               </div>
@@ -53,11 +54,24 @@ const ManageCompaniesPage = () => {
                     {company.name}
                   </Link>
                 </h2>
-                <div className="meta flex text-gray-600 gap-1 mb-1">
-                  <div className="email">{company.email}</div> |
-                  <div className="role">{company.address}</div>|
-                  <div className="role">{company.phone}</div>|
-                  <div className="role">{company.taxId}</div>
+                <div className="meta flex text-gray-600 gap-2 mb-1">
+                  <div className="tag">
+                    {" "}
+                    <MdEmail />
+                    {company.email}
+                  </div>{" "}
+                  <div className="tag">
+                    <FaMap />
+                    {company.address}
+                  </div>
+                  <div className="tag">
+                    <FaPhone />
+                    {company.phone}
+                  </div>
+                  <div className="tag">
+                    <TbRosetteDiscount />
+                    {company.taxId}
+                  </div>
                 </div>
               </div>
               <div className="flex gap-3 items-center">

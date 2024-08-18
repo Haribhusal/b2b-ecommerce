@@ -42,10 +42,7 @@ const ManageCategoriesPage = () => {
       <section>
         <ul>
           {categories.map((category) => (
-            <li
-              key={category._id}
-              className="bg-orange-50 group items-center mb-2 card p-3 rounded-md flex gap-3"
-            >
+            <li key={category._id} className="card">
               <div className="image">
                 <MdCategory className="text-xl text-orange-400 shadow  w-8 h-8 p-1 rounded-md bg-white" />
               </div>

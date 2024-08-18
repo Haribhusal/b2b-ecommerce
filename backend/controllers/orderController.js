@@ -6,54 +6,40 @@ const asyncHandler = require("express-async-handler");
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
-  const { items } = req.body;
+  try {
+    if (!req.user || !req.user._id) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized or user ID missing" });
+    }
 
-  const user = req.user._id;
-  console.log("user is", user);
+    const { items, totalItems, totalPrice, paymentMethod } = req.body;
 
-  if (!items || items.length === 0) {
-    res.status(400);
-    throw new Error("No items in the order");
+    if (!items || !Array.isArray(items)) {
+      return res.status(400).json({ message: "Order items are required" });
+    }
+
+    // Create a new order object
+    const newOrder = {
+      user: req.user._id,
+      items, // Directly include the items in the order object
+      totalItems,
+      totalPrice,
+      paymentMethod,
+    };
+
+    // Save the new order to the database
+    const order = await Order.create(newOrder);
+
+    // Respond with the created order
+    res.status(201).json({
+      message: "Order created successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  // Prepare the order items with product details
-  const orderItems = await Promise.all(
-    items.map(async (item) => {
-      const product = await Product.findById(item.product);
-
-      if (!product) {
-        res.status(404);
-        throw new Error("Product not found");
-      }
-
-      const totalItemPrice = product.finalPrice * item.quantity;
-
-      return {
-        product: item.product,
-        quantity: item.quantity,
-        price: product.finalPrice,
-        totalItemPrice,
-      };
-    })
-  );
-
-  // Calculate total items and total amount
-  const totalItems = orderItems.reduce((acc, item) => acc + item.quantity, 0);
-  const totalAmount = orderItems.reduce(
-    (acc, item) => acc + item.totalItemPrice,
-    0
-  );
-
-  // Create the order
-  const order = new Order({
-    user,
-    orderItems,
-    totalItems,
-    totalAmount,
-  });
-
-  const createdOrder = await order.save();
-  res.status(201).json(createdOrder);
 });
 
 // @desc    Get all orders
@@ -84,16 +70,41 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @desc    Update order to delivered
 // @route   PUT /api/orders/:id/deliver
 // @access  Private/Admin
-const updateOrderToDelivered = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id);
 
-  if (order) {
-    order.isDelivered = true;
-    order.deliveredAt = Date.now();
+const updateOrderById = async ({ id, status, ...orderData }) => {
+  const order = await Order.findById(id);
 
-    const updatedOrder = await order.save();
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  if (status) {
+    order.status = status;
+
+    if (status === "Delivered") {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+    }
+  }
+
+  // Update other fields if needed
+  Object.assign(order, orderData);
+
+  const updatedOrder = await order.save();
+  return updatedOrder;
+};
+
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+
+  try {
+    const updatedOrder = await updateOrderById({
+      id: req.params.id,
+      status,
+    });
+
     res.json(updatedOrder);
-  } else {
+  } catch (error) {
     res.status(404);
     throw new Error("Order not found");
   }
@@ -118,6 +129,6 @@ module.exports = {
   createOrder,
   getOrders,
   getOrderById,
-  updateOrderToDelivered,
+  updateOrderStatus,
   deleteOrder,
 };

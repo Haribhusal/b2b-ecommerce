@@ -2,17 +2,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { FaAngleLeft, FaAngleRight, FaTrash } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 import { formatPrice } from "../utils/formatPrice";
 import {
   increaseQuantity,
   decreaseQuantity,
   setQuantity,
   removeFromCart,
+  clearCart,
 } from "../features/cartSlice";
+import { Link, useNavigate } from "react-router-dom";
 import { useAddOrder } from "../hooks/useOrders"; // Import useAddOrder hook
 
 const CartPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { cartItems, totalQuantity, totalPrice } = useSelector(
     (state) => state.cart
   );
@@ -52,7 +56,9 @@ const CartPage = () => {
 
     createOrder(orderData, {
       onSuccess: () => {
-        console.log("Order placed successfully!");
+        toast.success("Order Placed Successfully");
+        dispatch(clearCart());
+        navigate("/order-success");
         // Optionally, you can clear the cart or redirect to another page
       },
       onError: (error) => {
@@ -142,7 +148,18 @@ const CartPage = () => {
               </div>
             ))
           ) : (
-            <div>No products found in the Cart</div>
+            <div className="flex flex-col items-center text-center p-5 md:p-10">
+              <img src="./empty-cart.svg" className="w-48" />
+              <div className="info my-3">
+                <h3 className="title text-2xl">No items in the cart</h3>
+                <p className="text-gray-600 mb-3">
+                  It seems you have not added any items in the cart
+                </p>
+                <Link to={"/products"}>
+                  <button className="btn btn-primary">Find Products</button>
+                </Link>
+              </div>
+            </div>
           )}
         </div>
       </div>

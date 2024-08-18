@@ -7,6 +7,12 @@ import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { AiFillProduct } from "react-icons/ai";
 import Loader from "./../../components/Loader";
+import { formatPrice } from "./../../utils/formatPrice";
+import { IoMdPricetag } from "react-icons/io";
+import { RiDiscountPercentLine } from "react-icons/ri";
+import { AiOutlineStock } from "react-icons/ai";
+import { MdCategory } from "react-icons/md";
+import { FaBuildingWheat } from "react-icons/fa6";
 
 const ManageProductsPage = () => {
   const { data: products, error, isLoading, refetch } = useProducts(); // Include refetch function
@@ -51,7 +57,7 @@ const ManageProductsPage = () => {
           {products.map((product) => (
             <li
               key={product._id} // Use product._id
-              className="bg-orange-50 group items-center mb-2 card p-3 rounded-md flex gap-3"
+              className="card"
             >
               <div className="image">
                 <AiFillProduct className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" />
@@ -60,13 +66,29 @@ const ManageProductsPage = () => {
                 <h2 className="text-xl font-semibold text-gray-700">
                   {product.name}
                 </h2>
-                <div className="meta flex text-gray-600 gap-1 mb-1">
-                  <div className="price">Rs. {product.price}</div> |
-                  <div className="stock">
+                <div className="meta flex gap-2 text-gray-600 mb-1 ">
+                  <div className="tag">
+                    <IoMdPricetag />
+                    Rs. {formatPrice(product.finalPrice)}
+                  </div>{" "}
+                  <div className="tag ">
+                    <RiDiscountPercentLine />
+                    {product.discountType === "percentage"
+                      ? `${product.discountValue}% off`
+                      : `Rs. ${product.discountValue} off`}
+                  </div>
+                  <div className="tag">
+                    <AiOutlineStock />
                     {product?.quantity} items in Stock
                   </div>
-                  |<div className="stock">{product.company?.name} </div> |
-                  <div className="stock">{product.category?.name} </div>
+                  <div className="tag">
+                    <FaBuildingWheat />
+                    {product.company?.name}{" "}
+                  </div>
+                  <div className="tag">
+                    <MdCategory />
+                    {product.category?.name}
+                  </div>
                 </div>
               </div>
               <div className="flex gap-3 items-center">

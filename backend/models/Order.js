@@ -1,28 +1,33 @@
 const mongoose = require("mongoose");
 
-const orderSchema = new mongoose.Schema({
-  items: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true,
-      },
-      quantity: { type: Number, required: true, min: 1 },
-      price: { type: Number, required: true }, // Product price at the time of order
-      totalItemPrice: { type: Number, required: true }, // price * quantity
+const orderSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    status: {
+      type: String,
+      enum: ["Pending", "Accepted", "Rejected"],
+      default: "Pending",
     },
-  ],
-  totalAmount: { type: Number, required: true },
-  totalItems: { type: Number, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  status: {
-    type: String,
-    enum: ["pending", "completed", "canceled"],
-    default: "pending",
+    items: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        name: { type: String, required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+      },
+    ],
+    totalItems: { type: Number, required: true },
+    totalPrice: { type: Number, required: true },
+    paymentMethod: { type: String, required: true },
   },
-  createdAt: { type: Date, default: Date.now },
-});
+  {
+    timestamps: true,
+  }
+);
 
 // Middleware to calculate total items and total amount
 orderSchema.pre("save", function (next) {
