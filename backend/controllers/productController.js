@@ -133,10 +133,10 @@ const searchProducts = asyncHandler(async (req, res) => {
       query.category = category;
     }
     if (minPrice) {
-      query.price = { $gte: minPrice };
+      query.finalPrice = { $gte: minPrice };
     }
     if (maxPrice) {
-      query.price = { ...query.price, $lte: maxPrice };
+      query.finalPrice = { ...query.price, $lte: maxPrice };
     }
 
     // Sort options

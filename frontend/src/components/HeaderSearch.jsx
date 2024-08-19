@@ -28,17 +28,21 @@ const HeaderSearch = () => {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex gap-3 items-center py-3 md:px-10"
+      className="flex gap-3 items-center py-3 md:px-10 shadow-inner shadow-orange-100"
     >
-      <div className="flex-1">Search or Filter Products</div>
+      <div className="flex-3">Search or Filter Products</div>
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Product Name..."
-        className="input flex-1"
+        className="input flex-2"
       />
-      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className="flex-1"
+      >
         <option value="">Select a category</option>
         {categories?.map((category) => (
           <option key={category._id} value={category._id}>
@@ -51,14 +55,14 @@ const HeaderSearch = () => {
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
         placeholder="Min Price"
-        className="input"
+        className="input flex-1 w-24"
       />
       <input
         type="number"
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
         placeholder="Max Price"
-        className="input"
+        className="input flex-1 w-24"
       />
       <button type="submit" className="btn btn-primary w-72">
         Search Products
