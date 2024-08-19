@@ -64,6 +64,7 @@ export const useRegisterUser = () => {
 
 const logoutUser = () => {
   localStorage.removeItem("token"); // Remove the token from localStorage
+  localStorage.removeItem("user"); // Remove the token from localStorage
 };
 
 export const useLogoutUser = () => {

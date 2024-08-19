@@ -112,10 +112,53 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const searchProducts = asyncHandler(async (req, res) => {
+  try {
+    const {
+      searchTerm,
+      category,
+      minPrice,
+      maxPrice,
+      sortBy,
+      order = "asc",
+    } = req.query;
+
+    // Build the search query
+    let query = {};
+
+    if (searchTerm) {
+      query.name = { $regex: searchTerm, $options: "i" }; // Case-insensitive search
+    }
+    if (category) {
+      query.category = category;
+    }
+    if (minPrice) {
+      query.price = { $gte: minPrice };
+    }
+    if (maxPrice) {
+      query.price = { ...query.price, $lte: maxPrice };
+    }
+
+    // Sort options
+    let sortOptions = {};
+    if (sortBy) {
+      sortOptions[sortBy] = order === "asc" ? 1 : -1;
+    }
+
+    // Execute the query with filters and sorting
+    const products = await Product.find(query).sort(sortOptions);
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = {
   createProduct,
   getProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  searchProducts,
 };

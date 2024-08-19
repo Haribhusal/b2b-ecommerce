@@ -6,11 +6,16 @@ import {
 } from "../../hooks/useOrders";
 import { Link } from "react-router-dom";
 import { ImSpinner3 } from "react-icons/im";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
-import { FaShoppingCart } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns"; // Import from date-fns
+import { TfiTicket } from "react-icons/tfi";
+import { FiLoader } from "react-icons/fi";
+import { IoIosTime, IoMdInformationCircle } from "react-icons/io";
+import { formatPrice } from "../../utils/formatPrice";
+import { BsStack } from "react-icons/bs";
+import { MdPayments } from "react-icons/md";
 
 const ManageOrdersPage = () => {
   const { data: orders, error, isLoading, refetch } = useOrders();
@@ -23,7 +28,7 @@ const ManageOrdersPage = () => {
 
   const {
     mutate: updateOrderStatus,
-    isLoading: statusLoading,
+    isPending: statusLoading,
     isError: statusError,
   } = useUpdateOrderStatus();
 
@@ -54,7 +59,7 @@ const ManageOrdersPage = () => {
     );
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading || statusLoading) return <Loader />;
   if (error) return <div>Error: {error.message || "An error occurred"}</div>;
 
   return (
@@ -67,38 +72,81 @@ const ManageOrdersPage = () => {
           {orders.map((order) => (
             <li key={order._id} className="card">
               <div className="image">
-                <FaShoppingCart className="text-xl text-orange-400 shadow w-12 h-12 p-2 rounded-md bg-white" />
+                <TfiTicket className="text-xl text-orange-400 shadow w-12 h-12 p-2 rounded-md bg-white" />
               </div>
               <div className="info w-full">
                 <h2 className="text-xl font-semibold text-gray-700">
-                  Order #
-                  <Link to={`/dashboard/order-details/${order._id}`}>
-                    {order._id}
-                  </Link>
+                  <span className="capitalize">{order.user?.name} </span>
+                  <span className="text-sm font-normal">
+                    <Link to={`/dashboard/order-details/${order._id}`}>
+                      #{order._id}
+                    </Link>{" "}
+                  </span>
                 </h2>
                 <div className="meta flex text-gray-600 gap-1 mb-1">
-                  <div className="status">Status: {order.status}</div> |
-                  <div className="time">
+                  <div className="tag">
+                    <IoMdInformationCircle /> {order.status}
+                  </div>{" "}
+                  <div className="tag">
+                    <IoMdInformationCircle /> Rs.{formatPrice(order.totalPrice)}
+                  </div>{" "}
+                  <div className="tag">
+                    <BsStack />
+                    {order?.totalItems} items
+                  </div>{" "}
+                  <div className="tag capitalize">
+                    <MdPayments />
+                    {order?.paymentMethod}
+                  </div>{" "}
+                  <div className="tag">
+                    <IoIosTime />
                     {formatDistanceToNow(new Date(order.createdAt))} ago
                   </div>
                 </div>
               </div>
               <div className="flex gap-3 items-center">
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => handleStatusChange(order._id, "Accepted")}
-                    className="btn btn-primary"
-                    disabled={statusLoading}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    onClick={() => handleStatusChange(order._id, "Rejected")}
-                    className="btn btn-bordered"
-                    disabled={statusLoading}
-                  >
-                    Reject
-                  </button>
+                  {order.status === "Pending" && (
+                    <>
+                      <button
+                        onClick={() =>
+                          handleStatusChange(order._id, "Accepted")
+                        }
+                        className="btn btn-primary flex items-center gap-3"
+                        disabled={statusLoading}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleStatusChange(order._id, "Rejected")
+                        }
+                        className="btn btn-bordered"
+                        disabled={statusLoading}
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                  {order.status === "Rejected" && (
+                    <button
+                      onClick={() => handleStatusChange(order._id, "Accepted")}
+                      className="btn btn-primary flex items-center gap-3"
+                      disabled={statusLoading}
+                    >
+                      Accept
+                    </button>
+                  )}
+
+                  {order.status === "Accepted" && (
+                    <button
+                      onClick={() => handleStatusChange(order._id, "Rejected")}
+                      className="btn btn-bordered"
+                      disabled={statusLoading}
+                    >
+                      Reject
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDelete(order._id)}
                     className="h-8 w-8 shadow-2xl text-white bg-red-600 rounded-full flex justify-center items-center"

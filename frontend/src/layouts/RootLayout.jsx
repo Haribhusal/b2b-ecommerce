@@ -9,7 +9,7 @@ const RootLayout = () => {
     <>
       <Header />
       <Toaster />
-      <main className="min-h-screen bg-orange-50">
+      <main className="min-h-screen bg-gray-50">
         <Outlet />
       </main>
       <Footer />

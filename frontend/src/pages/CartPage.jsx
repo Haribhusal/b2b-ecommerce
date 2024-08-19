@@ -13,6 +13,7 @@ import {
 } from "../features/cartSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { useAddOrder } from "../hooks/useOrders"; // Import useAddOrder hook
+import { FiLoader } from "react-icons/fi";
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -21,8 +22,7 @@ const CartPage = () => {
     (state) => state.cart
   );
 
-  const { mutate: createOrder } = useAddOrder(); // Destructure mutate function from useAddOrder
-
+  const { mutate: createOrder, isPending } = useAddOrder(); // Destructure mutate function from useAddOrder
   const validationSchema = Yup.object().shape({
     quantity: Yup.number()
       .min(1, "Minimum quantity is 1")
@@ -210,8 +210,13 @@ const CartPage = () => {
                     </div>
                   )}
 
-                  <button type="submit" className="btn btn-primary px-5 py-2">
-                    Place Order
+                  <button
+                    type="submit"
+                    className="btn btn-primary flex justify-center items-center gap-3 px-5 py-2"
+                    disabled={isPending}
+                  >
+                    {isPending ? " Placing Order" : "Place Order"}
+                    {isPending && <FiLoader className="animate-spin" />}
                   </button>
                 </Form>
               )}

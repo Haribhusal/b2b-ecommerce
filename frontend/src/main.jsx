@@ -16,6 +16,7 @@ import ProductDetail from "./components/ProductDetail.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx"; // Import ProtectedRoute
 import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
+import SearchResults from "./pages/SearchResults.jsx";
 // Dashboard Page
 import ManageProductsPage from "./pages/dashboard/ManageProductsPage.jsx";
 import ManageCategoriesPage from "./pages/dashboard/ManageCategoriesPage.jsx";
@@ -33,6 +34,9 @@ import ManageOrdersPage from "./pages/dashboard/ManageOrdersPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import EditOrderPage from "./pages/dashboard/EditOrderPage.jsx";
 import OrderDetailsPage from "./pages/dashboard/OrderDetailsPage.jsx";
+import ReportsPage from "./pages/dashboard/ReportsPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -48,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "/products",
         element: <ProductsPage />,
+      },
+      {
+        path: "/search",
+        element: <SearchResults />,
       },
       {
         path: "/products/:productId",
@@ -143,6 +151,14 @@ const router = createBrowserRouter([
       {
         path: "order-details/:id",
         element: <OrderDetailsPage />,
+      },
+      {
+        path: "reports",
+        element: <ReportsPage />,
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />,
       },
     ],
   },

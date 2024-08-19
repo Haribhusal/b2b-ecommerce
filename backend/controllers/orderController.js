@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const asyncHandler = require("express-async-handler");
+const sendEmail = require("../utils/email");
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -31,7 +32,44 @@ const createOrder = asyncHandler(async (req, res) => {
     // Save the new order to the database
     const order = await Order.create(newOrder);
 
+    // Generate HTML for items
+    const itemsHtml = items
+      .map(
+        (item) =>
+          `<tr>
+         <td>${item.name}</td>
+         <td>${item.quantity}</td>
+         <td>Rs. ${item.price}</td>
+       </tr>`
+      )
+      .join("");
+
     // Respond with the created order
+    await sendEmail({
+      from: process.env.EMAIL_USER,
+      to: req.user.email,
+      subject: "Order Placed Successfully",
+      text: "Hello, your order has been placed successfully.",
+      html: `<h1>Order Confirmation</h1>
+             <p>Thank you for your order. Here are the details:</p>
+             <table border="1" style="width:100%; text-align: left; border: 1px solid black; border-collapse: collapse;">
+               <thead>
+                 <tr>
+                   <th>Item</th>
+                   <th>Quantity</th>
+                   <th>Price</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 ${itemsHtml}
+               </tbody>
+             </table>
+             <p><strong>Total Items:</strong> ${totalItems}</p>
+             <p><strong>Total Price:</strong> Rs. ${totalPrice}</p>
+             <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+             <p>We will notify you once your order is approved.</p>`,
+    });
+
     res.status(201).json({
       message: "Order created successfully",
       order,
@@ -46,7 +84,9 @@ const createOrder = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate("user", "id name email");
+  const orders = await Order.find({})
+    .populate("user", "id name email")
+    .sort({ createdAt: -1 });
   res.json(orders);
 });
 
@@ -96,11 +136,49 @@ const updateOrderById = async ({ id, status, ...orderData }) => {
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
+  const order = await Order.findById(req.params.id);
 
   try {
     const updatedOrder = await updateOrderById({
       id: req.params.id,
       status,
+    });
+
+    const itemsHtml = order?.items
+      .map(
+        (item) =>
+          `<tr>
+         <td>${item.name}</td>
+         <td>${item.quantity}</td>
+         <td>Rs. ${item.price}</td>
+       </tr>`
+      )
+      .join("");
+
+    // Respond with the created order
+    await sendEmail({
+      from: process.env.EMAIL_USER,
+      to: req.user.email,
+      subject: `Order ${status} Successfully`,
+      text: `Hello, your order has been ${status}.`,
+      html: `<h1>Order ${status}</h1>
+             <p>Your order has been verified by the Admin and ${status} your order. According to your order, the products you have requrested are:</p>
+             <table border="1" style="width:100%; text-align: left; border: 1px solid black; border-collapse: collapse;">
+               <thead>
+                 <tr>
+                   <th>Item</th>
+                   <th>Quantity</th>
+                   <th>Price</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 ${itemsHtml}
+               </tbody>
+             </table>
+             <p><strong>Total Items:</strong> ${order.totalItems}</p>
+             <p><strong>Total Price:</strong> Rs. ${order.totalPrice}</p>
+             <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+             <p>We will be in touch with you. </p>`,
     });
 
     res.json(updatedOrder);

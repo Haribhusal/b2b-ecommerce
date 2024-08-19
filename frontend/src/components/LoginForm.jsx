@@ -30,6 +30,7 @@ const LoginForm = () => {
         onSuccess: (data) => {
           toast.success(data.message || "Login successful");
           // Save token or user data in local storage/session storage if needed
+          localStorage.setItem("user", JSON.stringify(data));
           localStorage.setItem("token", data.token); // example of saving token
           // Redirect to dashboard or home page after successful login
           navigate("/dashboard");

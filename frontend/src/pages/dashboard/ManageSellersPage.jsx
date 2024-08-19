@@ -13,7 +13,6 @@ import { FcDisapprove } from "react-icons/fc";
 
 const ManageSellersPage = () => {
   const { data: sellers, error, isLoading, refetch } = useSellers();
-  console.log(sellers);
   const {
     mutate: deleteSeller,
     isLoading: deleteLoading,

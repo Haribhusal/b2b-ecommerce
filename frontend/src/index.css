@@ -19,7 +19,7 @@
   }
 
   .card {
-    @apply hover:bg-orange-50 bg-white  border-[1px] hover:border-transparent border-gray-200 cursor-pointer items-center mb-2  p-3 rounded-md flex gap-3;
+    @apply hover:bg-orange-50 transition-all duration-200 bg-white  shadow-inner shadow-orange-100 hover:shadow-orange-300 cursor-pointer items-center mb-2  p-3 rounded-md flex gap-3;
   }
   .btn-primary {
     @apply bg-orange-700 text-white hover:border-orange-400;
@@ -51,7 +51,7 @@
     @apply text-sm text-gray-600 block mb-1;
   }
   .tag {
-    @apply flex hover:bg-orange-600 border-l-[1px] border-orange-500/30  gap-1 items-center bg-orange-50 shadow-sm px-2 leading-normal rounded-sm;
+    @apply flex  border-l-[1px] border-orange-500/30  gap-1 items-center bg-orange-50 shadow-sm px-2 leading-normal rounded-sm;
   }
   .tag svg {
     @apply text-orange-500;

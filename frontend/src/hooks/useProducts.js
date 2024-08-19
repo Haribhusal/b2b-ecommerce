@@ -111,16 +111,13 @@ export const useUpdateProduct = () => {
 };
 
 const deleteProductById = async (productId) => {
-  const response = await fetch(
-    `http://localhost:5000/api/products/${productId}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-    }
-  );
+  const response = await fetch(`${BASE_URL}/products/${productId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+  });
 
   if (!response.ok) {
     throw new Error("Failed to delete the product");
@@ -132,5 +129,21 @@ const deleteProductById = async (productId) => {
 export const useDeleteProduct = () => {
   return useMutation({
     mutationFn: deleteProductById, // Ensure mutationFn is provided
+  });
+};
+
+const fetchSearchResults = async (query) => {
+  const response = await fetch(`${BASE_URL}/products/search?${query}`);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
+};
+
+export const useSearchProducts = (query) => {
+  return useQuery({
+    queryKey: ["searchResults", query],
+    queryFn: () => fetchSearchResults(query),
+    keepPreviousData: true,
   });
 };

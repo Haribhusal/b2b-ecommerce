@@ -1,7 +1,13 @@
 import React from "react";
-
+import CategoryList from "./../components/CategoryList";
+import ProductList from "./../components/ProductsList";
 const HomePage = () => {
-  return <div>HomePage</div>;
+  return (
+    <>
+      <CategoryList />
+      <ProductList />
+    </>
+  );
 };
 
 export default HomePage;

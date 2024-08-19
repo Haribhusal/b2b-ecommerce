@@ -1,94 +1,130 @@
 import React from "react";
 import { MdDashboard } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { FaBuildingWheat } from "react-icons/fa6";
+import { useLogoutUser } from "../../hooks/useAuth";
 
 const Sidebar = () => {
+  const userStored = localStorage.getItem("user");
+  const userObj = JSON.parse(userStored);
+  const handleLogout = useLogoutUser();
+
+  const logOut = () => {
+    handleLogout();
+    // localStorage.removeItem("token");
+  };
+
   return (
-    <aside className="w-full md:w-1/4 bg-orange-100 text-white min-h-screen">
-      <div className="heading  p-3 px-5 bg-orange-400">Welcome Back, Hari!</div>
+    <aside className="w-full md:w-1/4 bg-orange-100 min-h-screen border-l-2 border-orange-500">
+      <Link to={"/"} className="p-5 flex items-center gap-2 text-gray-700">
+        <FaBuildingWheat className="text-3xl text-orange-500" />
+        <div className="span font-semibold">BizQuest</div>
+      </Link>
+
+      <div className="heading capitalize p-3 px-5 bg-orange-500 text-white">
+        Welcome, {userObj.name}
+      </div>
       <div className="menu">
-        <Link
-          to="/dashboard"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
-        >
-          <div className="icon">
-            <MdDashboard />
-          </div>
-          <div className="label">Dashboard</div>
-        </Link>
-        <Link
+        <NavLink
           to="manage-products"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Manage Products</div>
-        </Link>
-        <Link
+        </NavLink>
+        <NavLink
           to="manage-categories"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Manage Categories</div>
-        </Link>
-        <Link
+        </NavLink>
+        <NavLink
           to="manage-companies"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Manage Companies</div>
-        </Link>
-
-        <Link
+        </NavLink>
+        <NavLink
           to="manage-sellers"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Manage Sellers</div>
-        </Link>
-        <Link
+        </NavLink>
+        <NavLink
           to="manage-orders"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Manage Orders</div>
-        </Link>
-        <Link
+        </NavLink>
+        <NavLink
           to="reports"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Reports</div>
-        </Link>
-        <Link
+        </NavLink>
+        <NavLink
           to="settings"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+          className={({ isActive }) =>
+            `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+              isActive ? "bg-white text-orange-600" : ""
+            }`
+          }
         >
           <div className="icon">
             <MdDashboard />
           </div>
           <div className="label">Settings</div>
-        </Link>
-        <Link
-          to="/"
-          className="flex px-5 py-3 gap-3 items-center link hover:bg-white"
+        </NavLink>
+        <div
+          onClick={() => logOut()}
+          className="flex px-5 cursor-pointer py-3 gap-3 items-center link hover:bg-white"
         >
           <div className="icon">
             <MdDashboard />
           </div>
-          <div className="label">Exit</div>
-        </Link>
+          <div className="label">Logout</div>
+        </div>
       </div>
     </aside>
   );

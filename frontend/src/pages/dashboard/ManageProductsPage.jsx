@@ -15,7 +15,7 @@ import { MdCategory } from "react-icons/md";
 import { FaBuildingWheat } from "react-icons/fa6";
 
 const ManageProductsPage = () => {
-  const { data: products, error, isLoading, refetch } = useProducts(); // Include refetch function
+  const { data: products, isLoading, error, refetch } = useProducts(); // Include refetch function
 
   const {
     mutate: deleteProduct,
@@ -77,6 +77,12 @@ const ManageProductsPage = () => {
                       ? `${product.discountValue}% off`
                       : `Rs. ${product.discountValue} off`}
                   </div>
+                  <div className="tag">
+                    <IoMdPricetag />
+                    <span className="line-through">
+                      Rs. {formatPrice(product.price)}
+                    </span>
+                  </div>{" "}
                   <div className="tag">
                     <AiOutlineStock />
                     {product?.quantity} items in Stock
