@@ -13,7 +13,9 @@ import { format, parseISO } from "date-fns";
 import Loader from "../Loader";
 
 const OrdersLineChart = () => {
-  const { data: orders, isLoading, error } = useOrders();
+  const { data: ordersFetched, isLoading, error } = useOrders();
+
+  const orders = ordersFetched.reverse();
 
   // Process data for the chart
   const chartData = useMemo(() => {

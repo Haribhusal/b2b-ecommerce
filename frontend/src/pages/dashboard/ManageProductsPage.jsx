@@ -63,7 +63,7 @@ const ManageProductsPage = () => {
                 <AiFillProduct className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" />
               </div>
               <div className="info w-full">
-                <h2 className="text-xl font-semibold text-gray-700">
+                <h2 className="text-xl line-clamp-1 font-semibold text-gray-700">
                   {product.name}
                 </h2>
                 <div className="meta flex gap-2 text-gray-600 mb-1 ">

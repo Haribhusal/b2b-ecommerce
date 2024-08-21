@@ -6,11 +6,12 @@ import { formatDistanceToNow } from "date-fns";
 import { formatPrice } from "../../utils/formatPrice";
 import { IoIosPricetag } from "react-icons/io";
 import { IoMdPricetag } from "react-icons/io";
-import { FaAngleLeft } from "react-icons/fa";
+import { FaAngleLeft, FaStackOverflow, FaWallet } from "react-icons/fa";
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
   const { data: order, error, isLoading } = useOrder(id);
+  console.log(order);
 
   if (isLoading) return <Loader />;
   if (error) return <div>Error: {error.message || "An error occurred"}</div>;
@@ -76,28 +77,31 @@ const OrderDetailsPage = () => {
               <div className="flex card justify-between">
                 <div className="left flex  gap-3">
                   <div className="image">
-                    <img
-                      src="https://picsum.photos/id/34/100/100"
+                    {/* <img
+                      src={}
                       className="h-12 w-12 rounded-md"
                       alt=""
-                    />
+                    /> */}
                   </div>
                   <div>
                     <div>
-                      <strong>{item?.name}</strong> x {item.quantity}
+                      <strong className="line-clamp-2">{item?.name}</strong>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 my-2">
                       <span className="tag">
-                        {" "}
                         <IoMdPricetag />
                         Rs. {formatPrice(item.price)}
                       </span>
+                      <span className="tag">
+                        <FaStackOverflow />
+                        {item.quantity}
+                      </span>
+                      <span className="tag">
+                        <FaWallet />
+                        Rs. {formatPrice(item.price * item.quantity)}
+                      </span>
                     </div>
                   </div>
-                </div>
-
-                <div className="">
-                  Rs. {formatPrice(item.price * item.quantity)}
                 </div>
               </div>
             </li>

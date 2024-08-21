@@ -50,7 +50,10 @@ const ManageCompaniesPage = () => {
               </div>
               <div className="info w-full">
                 <h2 className="text-xl font-semibold text-gray-700">
-                  <Link to={`/dashboard/edit-company/${company._id}`}>
+                  <Link
+                    to={`/dashboard/edit-company/${company._id}`}
+                    className="line-clamp-1"
+                  >
                     {company.name}
                   </Link>
                 </h2>
@@ -62,7 +65,7 @@ const ManageCompaniesPage = () => {
                   </div>{" "}
                   <div className="tag">
                     <FaMap />
-                    {company.address}
+                    <div className="span line-clamp-1">{company.address}</div>
                   </div>
                   <div className="tag">
                     <FaPhone />

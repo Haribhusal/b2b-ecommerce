@@ -14,7 +14,7 @@ const createOrder = asyncHandler(async (req, res) => {
         .json({ message: "Unauthorized or user ID missing" });
     }
 
-    const { items, totalItems, totalPrice, paymentMethod } = req.body;
+    const { items, totalItems, totalPrice, paymentMethod, images } = req.body;
 
     if (!items || !Array.isArray(items)) {
       return res.status(400).json({ message: "Order items are required" });
@@ -25,6 +25,7 @@ const createOrder = asyncHandler(async (req, res) => {
       user: req.user._id,
       items, // Directly include the items in the order object
       totalItems,
+      images,
       totalPrice,
       paymentMethod,
     };
@@ -37,6 +38,7 @@ const createOrder = asyncHandler(async (req, res) => {
       .map(
         (item) =>
           `<tr>
+         <td>${item.images[0].url}</td>
          <td>${item.name}</td>
          <td>${item.quantity}</td>
          <td>Rs. ${item.price}</td>
@@ -55,6 +57,7 @@ const createOrder = asyncHandler(async (req, res) => {
     //          <table border="1" style="width:100%; text-align: left; border: 1px solid black; border-collapse: collapse;">
     //            <thead>
     //              <tr>
+    //                <th>Image</th>
     //                <th>Item</th>
     //                <th>Quantity</th>
     //                <th>Price</th>
@@ -137,6 +140,7 @@ const updateOrderById = async ({ id, status, ...orderData }) => {
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const order = await Order.findById(req.params.id);
+  console.log(order);
 
   try {
     const updatedOrder = await updateOrderById({
@@ -144,6 +148,17 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
       status,
     });
 
+    if (status === "Accepted") {
+      // Update stock for each product in the order
+      for (const item of order.items) {
+        const product = await Product.findById(item.product);
+
+        if (product) {
+          product.quantity -= item.quantity;
+          await product.save();
+        }
+      }
+    }
     const itemsHtml = order?.items
       .map(
         (item) =>

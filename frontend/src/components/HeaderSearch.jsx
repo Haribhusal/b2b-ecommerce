@@ -15,6 +15,13 @@ const HeaderSearch = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const navigate = useNavigate();
 
+  const handleClear = () => {
+    setSearchTerm("");
+    setCategory("");
+    setMinPrice("");
+    setMaxPrice("");
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     const queryParams = new URLSearchParams({
@@ -68,8 +75,16 @@ const HeaderSearch = () => {
         placeholder="Max Price"
         className="input flex-1 w-24"
       />
+
       <button type="submit" className="btn btn-primary w-36">
         Search Products
+      </button>
+      <button
+        type="button"
+        onClick={handleClear}
+        className="btn btn-bordered w-24"
+      >
+        Clear
       </button>
     </form>
   );

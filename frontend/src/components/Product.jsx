@@ -8,6 +8,7 @@ const Product = ({ product }) => {
   return (
     <li
       key={product._id}
+      title={product.name}
       className="bg-white border-r-2 border-orange-500 relative shadow-md hover:shadow-lg transition-all p-5 rounded-md flex gap-3"
     >
       {product.discountValue !== 0 && (
@@ -22,12 +23,14 @@ const Product = ({ product }) => {
         <img
           src={product.images[0]?.url}
           className="rounded-md object-cover"
-          alt=""
+          alt={product.name}
         />
       </div>
       <div className="info w-full">
-        <h2 className="text-xl font-semibold text-gray-700">
-          <Link to={`/products/${product._id}`}>{product.name}</Link>
+        <h2 className="font-semibold text-gray-700">
+          <Link to={`/products/${product._id}`} className="line-clamp-2">
+            {product.name}
+          </Link>
         </h2>
         <div className="meta flex text-sm leading-normal   text-gray-600  gap-1 mb-2">
           <div className="tag">Rs. {formatPrice(product.finalPrice)}</div>

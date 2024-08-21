@@ -48,6 +48,7 @@ const CartPage = () => {
         name: item.name,
         quantity: item.quantity,
         price: item.finalPrice,
+        images: item.images,
       })),
       totalItems: totalQuantity,
       totalPrice: totalPrice,
