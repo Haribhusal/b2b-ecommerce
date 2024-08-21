@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useUpdateCategory, useCategory } from "../../hooks/useCategories";
+import {
+  useUpdateCategory,
+  useCategory,
+  useCategories,
+} from "../../hooks/useCategories";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +13,7 @@ import Loader from "./../../components/Loader";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Category name is required"),
+  parent: Yup.string().nullable(), // Parent category is optional
 });
 
 const CategoryEditForm = ({ id }) => {
@@ -19,6 +24,9 @@ const CategoryEditForm = ({ id }) => {
     isLoading: isCategoryLoading,
     error: categoryError,
   } = useCategory(id);
+
+  const { data: categories } = useCategories(); // Fetch all categories for parent dropdown
+
   const {
     mutate: updateCategory,
     isLoading: isUpdating,
@@ -28,12 +36,18 @@ const CategoryEditForm = ({ id }) => {
 
   useEffect(() => {
     if (category) {
-      formik.setValues({ name: category.name });
+      formik.setValues({
+        name: category.name,
+        parent: category.parent?._id || "", // Set parent category if exists
+      });
     }
   }, [category]);
 
   const formik = useFormik({
-    initialValues: { name: "" },
+    initialValues: {
+      name: "",
+      parent: "",
+    },
     validationSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
@@ -72,6 +86,24 @@ const CategoryEditForm = ({ id }) => {
         {formik.errors.name && (
           <div className="error">{formik.errors.name}</div>
         )}
+      </div>
+
+      {/* Parent Category */}
+      <div className="form-group">
+        <label htmlFor="parent">Parent Category</label>
+        <select
+          id="parent"
+          name="parent"
+          onChange={formik.handleChange}
+          value={formik.values.parent}
+        >
+          <option value="">Select Parent Category (Optional)</option>
+          {categories?.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Submit Button */}

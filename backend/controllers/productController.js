@@ -1,36 +1,56 @@
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 const asyncHandler = require("express-async-handler");
+const cloudinary = require("./../config/cloudinary");
 
 // @desc    Create a new product
 // @route   POST /api/products
 // @access  Private/Seller
 const createProduct = asyncHandler(async (req, res) => {
-  const {
-    name,
-    description,
-    price,
-    quantity,
-    discountType,
-    discountValue,
-    category,
-    company,
-  } = req.body;
+  try {
+    const {
+      name,
+      description,
+      price,
+      quantity,
+      discountType,
+      discountValue,
+      category,
+      company,
+    } = req.body;
+    const images = req.files; // assuming images are being uploaded via a form with 'multipart/form-data'
+    const uploadedImages = [];
+    if (images && images.length > 0) {
+      for (const image of images) {
+        const result = await cloudinary.uploader.upload(image.path, {
+          folder: "products",
+        });
+        uploadedImages.push({
+          url: result.secure_url,
+          public_id: result.public_id,
+        });
+      }
+    }
 
-  const product = new Product({
-    name,
-    description,
-    price,
-    quantity,
-    discountType,
-    discountValue,
-    category,
-    company,
-    user: req.user._id, // Assuming the seller's ID is stored in req.user
-  });
+    const product = new Product({
+      name,
+      description,
+      price,
+      quantity,
+      discountType,
+      discountValue,
+      category,
+      company,
+      user: req.user._id, // Assuming the seller's ID is stored in req.user
+      images: uploadedImages,
+    });
 
-  const createdProduct = await product.save();
+    const createdProduct = await product.save();
 
-  res.status(201).json(createdProduct);
+    res.status(201).json(createdProduct);
+  } catch (error) {
+    console.log("error in backend while adding an product", error);
+  }
 });
 
 // @desc    Get all products
@@ -130,13 +150,13 @@ const searchProducts = asyncHandler(async (req, res) => {
       query.name = { $regex: searchTerm, $options: "i" }; // Case-insensitive search
     }
     if (category) {
-      query.category = category;
+      query.category = category; // This should be the correct category ID
     }
     if (minPrice) {
       query.finalPrice = { $gte: minPrice };
     }
     if (maxPrice) {
-      query.finalPrice = { ...query.price, $lte: maxPrice };
+      query.finalPrice = { ...query.finalPrice, $lte: maxPrice };
     }
 
     // Sort options
@@ -154,6 +174,39 @@ const searchProducts = asyncHandler(async (req, res) => {
   }
 });
 
+// Fetch products by category ID, including subcategories
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { category } = req.query;
+
+  if (!category) {
+    return res.status(400).json({ message: "Category ID is required" });
+  }
+
+  try {
+    // Find the selected category
+    const selectedCategory = await Category.findById(category);
+    if (!selectedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // Find all subcategories of the selected category
+    const categories = await Category.find({
+      $or: [{ _id: category }, { parent: category }],
+    }).select("_id");
+
+    const categoryIds = categories.map((cat) => cat._id);
+
+    // Find products that belong to the selected category or its subcategories
+    const products = await Product.find({
+      category: { $in: categoryIds },
+    }).populate("category company");
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = {
   createProduct,
   getProducts,
@@ -161,4 +214,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   searchProducts,
+  getProductsByCategory,
 };

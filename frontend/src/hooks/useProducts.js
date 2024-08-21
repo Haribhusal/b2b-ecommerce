@@ -31,6 +31,31 @@ export const useProducts = () => {
   });
 };
 
+// Fetch products by category ID (including subcategories)
+const fetchProductsByCategory = async (categoryId) => {
+  const response = await fetch(
+    `${BASE_URL}/products/filter?category=${categoryId}`,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    await handleErrorResponse(response);
+  }
+
+  return response.json();
+};
+
+export const useCategoryProducts = (categoryId) => {
+  return useQuery({
+    queryKey: ["products", categoryId],
+    queryFn: () => fetchProductsByCategory(categoryId),
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    enabled: !!categoryId, // Only fetch if categoryId is provided
+  });
+};
+
 // Fetch a single product by ID
 const fetchProductById = async (productId) => {
   const response = await fetch(`${BASE_URL}/products/${productId}`, {
@@ -56,10 +81,9 @@ const addProduct = async (newProduct) => {
   const response = await fetch(`${BASE_URL}/products`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify(newProduct),
+    body: newProduct,
   });
 
   if (!response.ok) {

@@ -17,7 +17,7 @@ const ProductsList = () => {
 
   return (
     <section className="px-5 md:px-10 py-5">
-      <div className="heading text-slate-600 text-xl mb-3">Find products</div>
+      <div className="heading text-slate-600 text-xl mb-3">Products</div>
       <ul className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
         {products.map((product) => (
           <Product key={product._id} product={product} />

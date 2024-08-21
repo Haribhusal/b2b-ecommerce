@@ -179,3 +179,27 @@ export const useUpdateOrderStatus = () => {
     },
   });
 };
+const fetchSellerOrders = async () => {
+  const response = await fetch(`${BASE_URL}/orders/seller`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorDetails = await response.text(); // Get error details from response
+    throw new Error(`Failed to fetch orders: ${errorDetails}`);
+  }
+
+  return response.json();
+};
+
+export const useSellerOrders = () => {
+  return useQuery({
+    queryKey: ["sellerOrders"],
+    queryFn: fetchSellerOrders,
+    staleTime: 1000 * 60 * 10, // Data is fresh for 10 minutes
+    cacheTime: 1000 * 60 * 30, // Cached for 30 minutes
+    retry: 1, // Retry once on failure
+  });
+};

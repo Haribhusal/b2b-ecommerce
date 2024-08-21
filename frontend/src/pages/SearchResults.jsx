@@ -30,7 +30,6 @@ const SearchResults = () => {
 
   const query = new URLSearchParams(filters).toString();
   const { data: products, error, isLoading } = useSearchProducts(query);
-  console.log(products);
 
   if (isLoading) return <Loader />;
   if (error) return <div>Error: {error.message}</div>;

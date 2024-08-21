@@ -8,12 +8,18 @@ const {
   updateProduct,
   deleteProduct,
   searchProducts,
+  getProductsByCategory,
 } = require("../controllers/productController");
+const upload = require("../middleware/uploadMiddleware");
+
 const { protect, admin, seller } = require("../middleware/authMiddleware"); // Assuming you have middleware for auth
 
 router.route("/").get(getProducts);
 router.route("/search").get(searchProducts);
-router.route("/").post(protect, admin, createProduct);
+router.route("/filter").get(getProductsByCategory);
+router
+  .route("/")
+  .post(protect, admin, upload.array("images", 5), createProduct);
 
 router
   .route("/:id")

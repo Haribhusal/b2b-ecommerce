@@ -12,7 +12,11 @@ import Loader from "../../components/Loader";
 import { formatDistanceToNow } from "date-fns"; // Import from date-fns
 import { TfiTicket } from "react-icons/tfi";
 import { FiLoader } from "react-icons/fi";
-import { IoIosTime, IoMdInformationCircle } from "react-icons/io";
+import {
+  IoIosTime,
+  IoMdInformationCircle,
+  IoMdPricetags,
+} from "react-icons/io";
 import { formatPrice } from "../../utils/formatPrice";
 import { BsStack } from "react-icons/bs";
 import { MdPayments } from "react-icons/md";
@@ -88,7 +92,7 @@ const ManageOrdersPage = () => {
                     <IoMdInformationCircle /> {order.status}
                   </div>{" "}
                   <div className="tag">
-                    <IoMdInformationCircle /> Rs.{formatPrice(order.totalPrice)}
+                    <IoMdPricetags /> Rs.{formatPrice(order.totalPrice)}
                   </div>{" "}
                   <div className="tag">
                     <BsStack />
@@ -137,7 +141,6 @@ const ManageOrdersPage = () => {
                       Accept
                     </button>
                   )}
-
                   {order.status === "Accepted" && (
                     <button
                       onClick={() => handleStatusChange(order._id, "Rejected")}
@@ -147,6 +150,9 @@ const ManageOrdersPage = () => {
                       Reject
                     </button>
                   )}
+                  <Link to={`/dashboard/order-details/${order._id}`}>
+                    <button className="btn btn-primary">View</button>
+                  </Link>
                   <button
                     onClick={() => handleDelete(order._id)}
                     className="h-8 w-8 shadow-2xl text-white bg-red-600 rounded-full flex justify-center items-center"

@@ -37,6 +37,10 @@ import OrderDetailsPage from "./pages/dashboard/OrderDetailsPage.jsx";
 import ReportsPage from "./pages/dashboard/ReportsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 
+// Sellers Page
+import SellerProtecteRoutes from "./components/SellerProtectedRoutes.jsx";
+import ManageSellerOrders from "./pages/seller/ManageSellerOrders.jsx";
+import SellerOrderDetailsPage from "./pages/seller/SellerOrderDetailsPage.jsx";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -159,6 +163,20 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingsPage />,
+      },
+    ],
+  },
+  {
+    path: "/seller",
+    element: <SellerProtecteRoutes />, // Wrap all dashboard routes with ProtectedRoute
+    children: [
+      {
+        path: "manage-orders",
+        element: <ManageSellerOrders />,
+      },
+      {
+        path: "order-details/:id",
+        element: <SellerOrderDetailsPage />,
       },
     ],
   },

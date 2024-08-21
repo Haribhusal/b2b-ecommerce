@@ -1,17 +1,19 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useAddCategory } from "../../hooks/useCategories";
+import { useAddCategory, useCategories } from "../../hooks/useCategories";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Category name is required"),
+  parent: Yup.string().nullable(),
 });
 
 const AddCategoryForm = () => {
   const navigate = useNavigate();
+  const { data: categories } = useCategories(); // Fetch categories for the parent dropdown
   const {
     mutate: addCategory,
     isLoading: isAdding,
@@ -20,7 +22,10 @@ const AddCategoryForm = () => {
   } = useAddCategory();
 
   const formik = useFormik({
-    initialValues: { name: "" },
+    initialValues: {
+      name: "",
+      parent: "",
+    },
     validationSchema,
     onSubmit: (values) => {
       addCategory(values, {
@@ -51,6 +56,24 @@ const AddCategoryForm = () => {
         {formik.errors.name && (
           <div className="error">{formik.errors.name}</div>
         )}
+      </div>
+
+      {/* Parent Category */}
+      <div className="form-group">
+        <label htmlFor="parent">Parent Category</label>
+        <select
+          id="parent"
+          name="parent"
+          onChange={formik.handleChange}
+          value={formik.values.parent}
+        >
+          <option value="">Select Parent Category (Optional)</option>
+          {categories?.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Submit Button */}

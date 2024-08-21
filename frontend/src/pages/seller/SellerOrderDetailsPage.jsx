@@ -4,11 +4,10 @@ import { useOrder } from "../../hooks/useOrders";
 import Loader from "../../components/Loader";
 import { formatDistanceToNow } from "date-fns";
 import { formatPrice } from "../../utils/formatPrice";
-import { IoIosPricetag } from "react-icons/io";
 import { IoMdPricetag } from "react-icons/io";
 import { FaAngleLeft } from "react-icons/fa";
 
-const OrderDetailsPage = () => {
+const SellerOrderDetailsPage = () => {
   const { id } = useParams();
   const { data: order, error, isLoading } = useOrder(id);
 
@@ -19,7 +18,7 @@ const OrderDetailsPage = () => {
     <div className="p-5">
       <div className="heading mb-3 flex justify-between">
         <h3 className="title text-xl">Order Details </h3>
-        <Link to="/dashboard/manage-orders">
+        <Link to="/seller/manage-orders">
           <button className="btn btn-primary flex gap-2 items-center">
             {" "}
             <FaAngleLeft /> All Orders
@@ -108,4 +107,4 @@ const OrderDetailsPage = () => {
   );
 };
 
-export default OrderDetailsPage;
+export default SellerOrderDetailsPage;

@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa6";
+import { jwtDecode } from "jwt-decode";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -28,12 +29,16 @@ const LoginForm = () => {
     onSubmit: (values) => {
       loginUser(values, {
         onSuccess: (data) => {
+          localStorage.setItem("user", JSON.stringify(data));
+          localStorage.setItem("token", data.token);
           toast.success(data.message || "Login successful");
           // Save token or user data in local storage/session storage if needed
-          localStorage.setItem("user", JSON.stringify(data));
-          localStorage.setItem("token", data.token); // example of saving token
           // Redirect to dashboard or home page after successful login
-          navigate("/dashboard");
+          if (data.role === "admin") {
+            navigate("/dashboard");
+          } else {
+            navigate("/seller");
+          }
         },
         onError: (error) => {
           toast.error(error.message || "An error occurred");

@@ -5,10 +5,10 @@ import { useLogoutUser } from "./../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { formatPrice } from "./../utils/formatPrice";
 import HeaderSearch from "./../components/HeaderSearch";
+import { jwtDecode } from "jwt-decode";
 
 const Header = () => {
   const token = localStorage.getItem("token");
-
   const userStored = localStorage.getItem("user");
   const userObj = JSON.parse(userStored);
 
@@ -20,7 +20,7 @@ const Header = () => {
     // localStorage.removeItem("token");
   };
 
-  useEffect(() => {}, [token]);
+  // useEffect(() => {}, [userObj?.token]);
 
   return (
     <>
@@ -57,7 +57,10 @@ const Header = () => {
                 </span>
                 <span>Rs.{formatPrice(totalPrice)}</span>
               </Link>
-              <Link className="link" to="/dashboard">
+              <Link
+                className="link"
+                to={userObj.role === "admin" ? "/dashboard" : "/seller"}
+              >
                 Dashboard
               </Link>
               {/* <Link className="link" to="/profile">

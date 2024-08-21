@@ -21,6 +21,8 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
   category: Yup.string().required("Category is required"),
   company: Yup.string().required("Company is required"),
+  images: Yup.mixed().required("At least one image is required"),
+
   quantity: Yup.number()
     .min(0, "Quantity must be a positive number")
     .required("Quantity is required"),
@@ -50,33 +52,45 @@ const ProductAddForm = () => {
       category: "",
       company: "",
       quantity: "",
+      images: null,
     },
     validationSchema,
     onSubmit: (values) => {
-      const { price, discountType, discountValue } = values;
+      const formData = new FormData();
 
-      let finalPrice = price;
-      if (discountType === "flat") {
-        finalPrice -= discountValue;
-      } else if (discountType === "percentage") {
-        finalPrice -= (price * discountValue) / 100;
+      // Append all fields to FormData
+      Object.keys(values).forEach((key) => {
+        if (key === "images" && values.images) {
+          // Handle multiple images separately
+          for (let i = 0; i < values.images.length; i++) {
+            formData.append("images", values.images[i]);
+          }
+        } else {
+          formData.append(key, values[key]);
+        }
+      });
+
+      // Calculate finalPrice based on discountType and discountValue
+      let finalPrice = values.price;
+      if (values.discountType === "flat") {
+        finalPrice -= values.discountValue;
+      } else if (values.discountType === "percentage") {
+        finalPrice -= (values.price * values.discountValue) / 100;
       }
-
       finalPrice = Math.max(finalPrice, 0);
 
-      addProduct(
-        { ...values, finalPrice },
-        {
-          onSuccess: () => {
-            toast.success("Product added successfully");
-            formik.resetForm();
-            navigate("/dashboard/manage-products");
-          },
-          onError: (error) => {
-            toast.error(error.message || "An error occurred");
-          },
-        }
-      );
+      formData.append("finalPrice", finalPrice);
+
+      addProduct(formData, {
+        onSuccess: () => {
+          toast.success("Product added successfully");
+          formik.resetForm();
+          navigate("/dashboard/manage-products");
+        },
+        onError: (error) => {
+          toast.error(error.message || "Look, An error occurred ");
+        },
+      });
     },
   });
 
@@ -88,7 +102,7 @@ const ProductAddForm = () => {
         {categoriesError?.message || companiesError?.message}
       </div>
     );
-
+  // method="POST" enctype="multipart/form-data"
   return (
     <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
       {/* Product Name */}
@@ -231,6 +245,22 @@ const ProductAddForm = () => {
         />
         {formik.errors.quantity && (
           <div className="error">{formik.errors.quantity}</div>
+        )}
+      </div>
+      {/* Images */}
+      <div className="form-group">
+        <label htmlFor="images">Product Images</label>
+        <input
+          id="images"
+          name="images"
+          type="file"
+          onChange={(event) => {
+            formik.setFieldValue("images", event.currentTarget.files);
+          }}
+          multiple
+        />
+        {formik.errors.images && (
+          <div className="error">{formik.errors.images}</div>
         )}
       </div>
 

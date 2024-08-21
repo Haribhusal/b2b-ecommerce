@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCategories } from "../hooks/useCategories";
+import Loader from "./Loader";
 
 const HeaderSearch = () => {
   const {
@@ -25,6 +26,9 @@ const HeaderSearch = () => {
     navigate(`/search?${queryParams}`);
   };
 
+  if (isCategoriesLoading) return <Loader />;
+  if (categoriesError)
+    return <div>Error occured {categoriesError.message}</div>;
   return (
     <form
       onSubmit={handleSearch}
@@ -64,7 +68,7 @@ const HeaderSearch = () => {
         placeholder="Max Price"
         className="input flex-1 w-24"
       />
-      <button type="submit" className="btn btn-primary w-72">
+      <button type="submit" className="btn btn-primary w-36">
         Search Products
       </button>
     </form>

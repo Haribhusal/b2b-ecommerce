@@ -3,7 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./../components/dashboard/Sidebar";
 import { Toaster } from "react-hot-toast";
 
-const ProtectedRoute = () => {
+const SellerProtectedRoutes = () => {
   const token = localStorage.getItem("token");
   const userStored = localStorage.getItem("user");
   const userObj = userStored ? JSON.parse(userStored) : null;
@@ -16,9 +16,9 @@ const ProtectedRoute = () => {
   }
 
   // Redirect seller users to the seller dashboard
-  // if (userObj?.role !== "seller") {
-  //   return <Navigate to="/" state={{ from: location }} replace />;
-  // }
+  if (userObj?.role !== "seller") {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
 
   // Render the protected route content if the user is authenticated and not a seller
   return (
@@ -32,4 +32,4 @@ const ProtectedRoute = () => {
   );
 };
 
-export default ProtectedRoute;
+export default SellerProtectedRoutes;

@@ -14,7 +14,7 @@ const createCategory = asyncHandler(async (req, res) => {
     throw new Error("Category already exists");
   }
 
-  const category = new Category({ name, description, parent });
+  const category = new Category({ name, description, parent: parent || null });
 
   const createdCategory = await category.save();
 
