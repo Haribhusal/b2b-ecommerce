@@ -34,7 +34,8 @@ import ManageOrdersPage from "./pages/dashboard/ManageOrdersPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import EditOrderPage from "./pages/dashboard/EditOrderPage.jsx";
 import OrderDetailsPage from "./pages/dashboard/OrderDetailsPage.jsx";
-import ManageTicketsPage from "./pages/dashboard/ManageTicketsPage.jsx";
+import ManageAdminTicketsPage from "./pages/dashboard/ManageAdminTicketsPage.jsx";
+import AdminTicketDetailsPage from "./pages/dashboard/AdminTicketDetailsPage.jsx";
 import ReportsPage from "./pages/dashboard/ReportsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 
@@ -162,7 +163,11 @@ const router = createBrowserRouter([
       },
       {
         path: "manage-tickets",
-        element: <ManageTicketsPage />,
+        element: <ManageAdminTicketsPage />,
+      },
+      {
+        path: "view-ticket/:id",
+        element: <AdminTicketDetailsPage />,
       },
       {
         path: "reports",

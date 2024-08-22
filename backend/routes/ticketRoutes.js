@@ -18,7 +18,7 @@ router
 router.route("/:id").get(protect, getTicketById);
 
 router.route("/order/:orderId").get(protect, seller, getTicketsByOrder);
-router.route("/:ticketId/messages").post(protect, seller, addMessageToTicket);
+router.route("/:ticketId/messages").post(protect, addMessageToTicket);
 router.route("/:ticketId/status").patch(protect, seller, updateTicketStatus);
 
 module.exports = router;

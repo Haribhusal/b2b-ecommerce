@@ -6,7 +6,6 @@ import Loader from "../../components/Loader";
 
 const TicketDetailsPage = () => {
   const { id } = useParams();
-  console.log(id);
   const { data: ticket, isLoading, error } = useTicketById(id);
   const [message, setMessage] = useState("");
   const { mutate: addMessage, isLoading: isAddingMessage } =
@@ -27,39 +26,43 @@ const TicketDetailsPage = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="p-5">
+    <div className="p-5 relative">
       <h3 className="title text-xl mb-3">Ticket Details</h3>
       <div className="card flex-col items-start gap-1">
         <h4 className="font-bold">{ticket?.subject}</h4>
         <p className="tag">Status: {ticket.status}</p>
       </div>
-      <div className="border p-3 mb-5">
-        <h4 className="font-bold mb-2">Conversation</h4>
+      <div className="card flex-col items-start ">
+        <h4 className="font-bold">Conversation</h4>
         {ticket.messages.map((msg, index) => (
-          <div key={index} className="mb-2">
-            <strong>{msg.sender.name}:</strong> {msg.message}
+          <div key={index} className="tag rounded-full">
+            <strong>You</strong> {msg.message}
           </div>
         ))}
       </div>
-      <textarea
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Write a message..."
-        className="textarea w-full mb-3"
-      />
-      <button
-        className="btn btn-primary flex items-center gap-2"
-        onClick={handleAddMessage}
-        disabled={isAddingMessage}
-      >
-        {isAddingMessage ? (
-          <>
-            Sending... <ImSpinner3 className="animate-spin" />
-          </>
-        ) : (
-          "Send Message"
-        )}
-      </button>
+      <div className="replyBox absolute bottom-0 mt-10 right-0  w-full px-5">
+        <div className="flex gap-3 items-start w-full flex-1">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Write a message..."
+            className="textarea w-full"
+          />
+          <button
+            className="btn btn-primary flex items-center gap-2 w-32"
+            onClick={handleAddMessage}
+            disabled={isAddingMessage}
+          >
+            {isAddingMessage ? (
+              <>
+                Sending... <ImSpinner3 className="animate-spin" />
+              </>
+            ) : (
+              "Send Message"
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
