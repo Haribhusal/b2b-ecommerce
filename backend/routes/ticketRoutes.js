@@ -1,9 +1,11 @@
 const express = require("express");
 const {
   createTicket,
-  getTickets,
+  getTicketsByOrder,
+  addMessageToTicket,
+  updateTicketStatus,
+  getAllTickets,
   getTicketById,
-  replyToTicket,
 } = require("../controllers/ticketController");
 const { protect, admin, seller } = require("../middleware/authMiddleware");
 
@@ -12,8 +14,11 @@ const router = express.Router();
 router
   .route("/")
   .post(protect, seller, createTicket)
-  .get(protect, admin, getTickets);
-router.route("/:id").get(protect, admin, getTicketById);
-router.route("/:id/reply").put(protect, admin, replyToTicket);
+  .get(protect, getAllTickets);
+router.route("/:id").get(protect, getTicketById);
+
+router.route("/order/:orderId").get(protect, seller, getTicketsByOrder);
+router.route("/:ticketId/messages").post(protect, seller, addMessageToTicket);
+router.route("/:ticketId/status").patch(protect, seller, updateTicketStatus);
 
 module.exports = router;

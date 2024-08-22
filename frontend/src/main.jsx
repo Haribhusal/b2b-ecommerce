@@ -34,6 +34,7 @@ import ManageOrdersPage from "./pages/dashboard/ManageOrdersPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import EditOrderPage from "./pages/dashboard/EditOrderPage.jsx";
 import OrderDetailsPage from "./pages/dashboard/OrderDetailsPage.jsx";
+import ManageTicketsPage from "./pages/dashboard/ManageTicketsPage.jsx";
 import ReportsPage from "./pages/dashboard/ReportsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 
@@ -41,6 +42,9 @@ import SettingsPage from "./pages/SettingsPage.jsx";
 import SellerProtecteRoutes from "./components/SellerProtectedRoutes.jsx";
 import ManageSellerOrders from "./pages/seller/ManageSellerOrders.jsx";
 import SellerOrderDetailsPage from "./pages/seller/SellerOrderDetailsPage.jsx";
+import ManageSellerTicketsPage from "./pages/seller/ManageSellerTicketsPage.jsx";
+import AddTicketPage from "./pages/seller/AddTicketPage.jsx";
+import TicketDetailsPage from "./pages/seller/TicketDetailsPage.jsx";
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -157,6 +161,10 @@ const router = createBrowserRouter([
         element: <OrderDetailsPage />,
       },
       {
+        path: "manage-tickets",
+        element: <ManageTicketsPage />,
+      },
+      {
         path: "reports",
         element: <ReportsPage />,
       },
@@ -173,6 +181,18 @@ const router = createBrowserRouter([
       {
         path: "manage-orders",
         element: <ManageSellerOrders />,
+      },
+      {
+        path: "manage-tickets",
+        element: <ManageSellerTicketsPage />,
+      },
+      {
+        path: "add-ticket",
+        element: <AddTicketPage />,
+      },
+      {
+        path: "view-ticket/:id",
+        element: <TicketDetailsPage />,
       },
       {
         path: "order-details/:id",

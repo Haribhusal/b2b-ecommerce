@@ -1,36 +1,45 @@
 const mongoose = require("mongoose");
 
-const ticketSchema = new mongoose.Schema({
-  seller: {
+const messageSchema = new mongoose.Schema({
+  sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  subject: {
+  message: {
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["Open", "In Progress", "Closed"],
-    default: "Open",
-  },
-  adminReply: {
-    type: String,
-  },
-  createdAt: {
+  timestamp: {
     type: Date,
     default: Date.now,
   },
-  updatedAt: {
-    type: Date,
-  },
 });
 
-const Ticket = mongoose.model("Ticket", ticketSchema);
+const ticketSchema = new mongoose.Schema(
+  {
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      required: true,
+    },
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    subject: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["Open", "Resolved"],
+      default: "Open",
+    },
+    messages: [messageSchema],
+  },
+  { timestamps: true }
+);
 
-module.exports = Ticket;
+module.exports = mongoose.model("Ticket", ticketSchema);

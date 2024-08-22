@@ -10,6 +10,7 @@ const productRoutes = require("./routes/productRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
 const path = require("path");
 
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -38,6 +39,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

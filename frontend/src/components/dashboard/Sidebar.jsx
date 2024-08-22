@@ -95,6 +95,19 @@ const Sidebar = ({ user }) => {
             <div className="label">Manage Orders</div>
           </NavLink>
           <NavLink
+            to="manage-tickets"
+            className={({ isActive }) =>
+              `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+                isActive ? "bg-white text-orange-600" : ""
+              }`
+            }
+          >
+            <div className="icon">
+              <MdDashboard />
+            </div>
+            <div className="label">Manage Tickets</div>
+          </NavLink>
+          <NavLink
             to="reports"
             className={({ isActive }) =>
               `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
@@ -136,6 +149,19 @@ const Sidebar = ({ user }) => {
               <MdDashboard />
             </div>
             <div className="label">My Orders</div>
+          </NavLink>
+          <NavLink
+            to="manage-tickets"
+            className={({ isActive }) =>
+              `flex px-5 py-3 gap-3 items-center link hover:bg-white ${
+                isActive ? "bg-white text-orange-600" : ""
+              }`
+            }
+          >
+            <div className="icon">
+              <MdDashboard />
+            </div>
+            <div className="label">Tickets</div>
           </NavLink>
           <NavLink
             to="settings"
