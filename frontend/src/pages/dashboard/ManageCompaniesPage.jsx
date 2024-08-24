@@ -1,6 +1,6 @@
 import React from "react";
 import { useCompanies, useDeleteCompany } from "../../hooks/useCompanies";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ImSpinner3 } from "react-icons/im";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
@@ -12,21 +12,18 @@ import { FaPhone } from "react-icons/fa6";
 import { TbRosetteDiscount } from "react-icons/tb";
 
 const ManageCompaniesPage = () => {
-  const navigate = useNavigate();
   const { data: companies, isLoading, error } = useCompanies();
   const { mutate: deleteCompany } = useDeleteCompany();
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this company?")) {
-      deleteCompany(id, {
-        onSuccess: () => {
-          toast.success("Company deleted successfully");
-        },
-        onError: (err) => {
-          toast.error(err.message || "Failed to delete company");
-        },
-      });
-    }
+    deleteCompany(id, {
+      onSuccess: () => {
+        toast.success("Company deleted successfully");
+      },
+      onError: (err) => {
+        toast.error(err.message || "Failed to delete company");
+      },
+    });
   };
 
   if (isLoading) return <Loader />;
@@ -51,7 +48,7 @@ const ManageCompaniesPage = () => {
               <div className="info w-full">
                 <h2 className="text-xl font-semibold text-gray-700">
                   <Link
-                    to={`/dashboard/edit-company/${company._id}`}
+                    to={`/dashboard/view-company/${company._id}`}
                     className="line-clamp-1"
                   >
                     {company.name}

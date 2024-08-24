@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useUpdateProduct, useProduct } from "../../hooks/useProducts";
@@ -7,6 +7,7 @@ import { useCompanies } from "../../hooks/useCompanies";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
+import { FaTrash } from "react-icons/fa";
 import Loader from "./../../components/Loader";
 
 const validationSchema = Yup.object({
@@ -21,22 +22,28 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
   category: Yup.string().required("Category is required"),
   company: Yup.string().required("Company is required"),
+  minimumOrder: Yup.number().required("Minimum order is required").min(1), // Add validation for minimumOrder
+
   quantity: Yup.number()
     .min(0, "Quantity must be a positive number")
     .required("Please add a product quantity"),
+  images: Yup.mixed(),
 });
 
 const ProductEditForm = ({ id }) => {
   const navigate = useNavigate();
+  const [existingImages, setExistingImages] = useState([]);
 
   const {
     data: product,
     isLoading: isProductLoading,
     error: productError,
   } = useProduct(id);
+  console.log("current product", product);
   const {
     mutate: updateProduct,
-    isLoading: isUpdating,
+    isPending: isUpdating,
+
     isError,
     error,
   } = useUpdateProduct();
@@ -62,7 +69,9 @@ const ProductEditForm = ({ id }) => {
         category: product.category?._id,
         company: product.company?._id,
         quantity: product.quantity,
+        minimumOrder: product.minimumOrder || 1, // Default minimum order value
       });
+      setExistingImages(product.images || []);
     }
   }, [product]);
 
@@ -71,28 +80,46 @@ const ProductEditForm = ({ id }) => {
       name: "",
       price: "",
       description: "",
-      discountType: "", // Discount type
-      discountValue: "", // Discount value
+      discountType: "",
+      discountValue: "",
       category: "",
       company: "",
       quantity: "",
+      images: null,
+      minimumOrder: "1",
     },
     validationSchema,
-    enableReinitialize: true, // Reinitialize form values when product data changes
+    enableReinitialize: true,
     onSubmit: (values) => {
-      const { price, discountType, discountValue } = values;
+      const formData = new FormData();
 
-      let finalPrice = price;
-      if (discountType === "flat") {
-        finalPrice -= discountValue;
-      } else if (discountType === "percentage") {
-        finalPrice -= (price * discountValue) / 100;
+      Object.keys(values).forEach((key) => {
+        if (key === "images" && values.images) {
+          for (let i = 0; i < values.images.length; i++) {
+            formData.append("images", values.images[i]);
+          }
+        } else {
+          formData.append(key, values[key]);
+        }
+      });
+
+      // Append existing images that weren't removed
+      existingImages.forEach((image, index) => {
+        formData.append(`existingImages[${index}]`, image.url);
+      });
+
+      let finalPrice = values.price;
+      if (values.discountType === "flat") {
+        finalPrice -= values.discountValue;
+      } else if (values.discountType === "percentage") {
+        finalPrice -= (values.price * values.discountValue) / 100;
       }
-
       finalPrice = Math.max(finalPrice, 0);
 
+      formData.append("finalPrice", finalPrice);
+
       updateProduct(
-        { id, ...values, finalPrice },
+        { id, formData },
         {
           onSuccess: () => {
             toast.success("Product updated successfully");
@@ -105,6 +132,12 @@ const ProductEditForm = ({ id }) => {
       );
     },
   });
+
+  const handleImageRemove = (index) => {
+    const newExistingImages = [...existingImages];
+    newExistingImages.splice(index, 1);
+    setExistingImages(newExistingImages);
+  };
 
   if (isProductLoading || isCategoriesLoading || isCompaniesLoading)
     return <Loader />;
@@ -119,7 +152,7 @@ const ProductEditForm = ({ id }) => {
     );
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
       {/* Product Name */}
       <div className="form-group">
         <label htmlFor="name">Product Name</label>
@@ -149,6 +182,20 @@ const ProductEditForm = ({ id }) => {
         />
         {formik.errors.price && (
           <div className="error">{formik.errors.price}</div>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="minimumOrder">Minimum Order</label>
+        <input
+          id="minimumOrder"
+          name="minimumOrder"
+          type="number"
+          onChange={formik.handleChange}
+          value={formik.values.minimumOrder}
+        />
+        {formik.errors.minimumOrder && (
+          <div className="error">{formik.errors.minimumOrder}</div>
         )}
       </div>
 
@@ -260,6 +307,46 @@ const ProductEditForm = ({ id }) => {
         />
         {formik.errors.quantity && (
           <div className="error">{formik.errors.quantity}</div>
+        )}
+      </div>
+
+      {/* Existing Images */}
+      <div className="form-group">
+        <label>Existing Images</label>
+        <div className="image-preview-container grid grid-cols-1 md:grid-cols-3 gap-3">
+          {existingImages.map((image, index) => (
+            <div key={index} className="image-preview card relative">
+              <img
+                className="h-auto max-w-full"
+                src={image.url}
+                alt={`Product ${index + 1}`}
+              />
+              <button
+                className="cursor-pointer flex justify-center items-center absolute right-3 top-3 h-12 text-white rounded-full shadow-md w-12 bg-orange-500 p-2"
+                type="button"
+                onClick={() => handleImageRemove(index)}
+              >
+                <FaTrash className="" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* New Images */}
+      <div className="form-group">
+        <label htmlFor="images">Add New Images</label>
+        <input
+          id="images"
+          name="images"
+          type="file"
+          onChange={(event) => {
+            formik.setFieldValue("images", event.currentTarget.files);
+          }}
+          multiple
+        />
+        {formik.errors.images && (
+          <div className="error">{formik.errors.images}</div>
         )}
       </div>
 

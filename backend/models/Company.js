@@ -23,6 +23,7 @@ const companySchema = new mongoose.Schema({
     required: [true, "Please add a company tax ID"],
     unique: true,
   },
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   createdAt: {
     type: Date,
     default: Date.now,

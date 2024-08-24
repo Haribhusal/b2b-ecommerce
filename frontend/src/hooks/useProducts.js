@@ -102,16 +102,13 @@ export const useAddProduct = () => {
     },
   });
 };
-
-// Update a product by ID
-const updateProductById = async ({ id, ...productData }) => {
+const updateProductById = async ({ id, formData }) => {
   const response = await fetch(`${BASE_URL}/products/${id}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify(productData),
+    body: formData,
   });
 
   if (!response.ok) {

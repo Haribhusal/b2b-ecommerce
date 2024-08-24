@@ -13,13 +13,14 @@ import { RiDiscountPercentLine } from "react-icons/ri";
 import { AiOutlineStock } from "react-icons/ai";
 import { MdCategory } from "react-icons/md";
 import { FaBuildingWheat } from "react-icons/fa6";
+import { BsStack } from "react-icons/bs";
 
 const ManageProductsPage = () => {
   const { data: products, isLoading, error, refetch } = useProducts(); // Include refetch function
-
+  // console.log(products);
   const {
     mutate: deleteProduct,
-    isLoading: deleteLoading,
+    isPending: deleteLoading,
     isError: deleteError,
     error: deleteErrorMessage,
   } = useDeleteProduct();
@@ -36,7 +37,7 @@ const ManageProductsPage = () => {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || deleteLoading) {
     return <Loader />;
   }
 
@@ -60,7 +61,11 @@ const ManageProductsPage = () => {
               className="card"
             >
               <div className="image">
-                <AiFillProduct className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" />
+                <img
+                  className="w-16 h-16 object-contain"
+                  src={product.images[0].url}
+                />
+                {/* <AiFillProduct className="text-xl text-orange-400 shadow  w-12 h-12 p-2 rounded-md bg-white" /> */}
               </div>
               <div className="info w-full">
                 <h2 className="text-xl line-clamp-1 font-semibold text-gray-700">
@@ -88,8 +93,8 @@ const ManageProductsPage = () => {
                     {product?.quantity} items in Stock
                   </div>
                   <div className="tag">
-                    <FaBuildingWheat />
-                    {product.company?.name}{" "}
+                    <BsStack />
+                    {product.minimumOrder} min. order
                   </div>
                   <div className="tag">
                     <MdCategory />
@@ -108,11 +113,7 @@ const ManageProductsPage = () => {
                   className="h-8 w-8 shadow-2xl text-white bg-red-600 rounded-full flex justify-center items-center"
                   disabled={deleteLoading}
                 >
-                  {deleteLoading ? (
-                    <ImSpinner3 className="animate-spin" />
-                  ) : (
-                    <FaTrash />
-                  )}
+                  <FaTrash />
                 </button>
               </div>
             </li>

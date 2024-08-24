@@ -76,12 +76,8 @@ const OrderDetailsPage = () => {
             <li key={item.product} className="mb-2">
               <div className="flex card justify-between">
                 <div className="left flex  gap-3">
-                  <div className="image">
-                    {/* <img
-                      src={}
-                      className="h-12 w-12 rounded-md"
-                      alt=""
-                    /> */}
+                  <div className="image w-48">
+                    <img className=" object-contain" src={item.images[0].url} />
                   </div>
                   <div>
                     <div>

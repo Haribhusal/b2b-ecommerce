@@ -19,6 +19,7 @@ const validationSchema = Yup.object({
 const CreateTicket = () => {
   const navigate = useNavigate();
   const { data: orders } = useSellerOrders(); // Fetch orders for the order dropdown
+  console.log("orders", orders);
   const {
     mutate: addTicket,
     isLoading: isAdding,
@@ -68,7 +69,11 @@ const CreateTicket = () => {
             <option value="">Select Order</option>
             {orders?.map((order) => (
               <option key={order._id} value={order._id}>
-                {order._id} - {order.productName}
+                {order.items.map((item) => (
+                  <span className="" key={item._id}>
+                    {item.name} X {item.quantity}
+                  </span>
+                ))}
               </option>
             ))}
           </select>

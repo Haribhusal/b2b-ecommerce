@@ -8,7 +8,7 @@ const {
   updateProduct,
   deleteProduct,
   searchProducts,
-  getProductsByCategory,
+  fetchProductsByCategory,
 } = require("../controllers/productController");
 const upload = require("../middleware/uploadMiddleware");
 
@@ -16,7 +16,7 @@ const { protect, admin, seller } = require("../middleware/authMiddleware"); // A
 
 router.route("/").get(getProducts);
 router.route("/search").get(searchProducts);
-router.route("/filter").get(getProductsByCategory);
+router.route("/filter").get(fetchProductsByCategory);
 router
   .route("/")
   .post(protect, admin, upload.array("images", 5), createProduct);
@@ -24,7 +24,7 @@ router
 router
   .route("/:id")
   .get(getProductById)
-  .put(protect, admin, updateProduct)
+  .put(protect, admin, upload.array("images", 5), updateProduct)
   .delete(protect, admin, deleteProduct);
 
 module.exports = router;

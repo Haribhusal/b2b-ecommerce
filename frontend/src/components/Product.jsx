@@ -1,10 +1,20 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "./../utils/formatPrice";
 import { useDispatch } from "react-redux";
 import { addToCart } from "./../features/cartSlice";
+import { toast } from "react-hot-toast";
 const Product = ({ product }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleClick = () => {
+    if (localStorage.getItem("token")) {
+      dispatch(addToCart(product));
+    } else {
+      navigate("/login");
+      toast.error("Please login to add item in the cart");
+    }
+  };
   return (
     <li
       key={product._id}
@@ -27,8 +37,11 @@ const Product = ({ product }) => {
         />
       </div>
       <div className="info w-full">
-        <h2 className="font-semibold text-gray-700">
-          <Link to={`/products/${product._id}`} className="line-clamp-2">
+        <h2 className="font-semibold text-gray-700 mb-1">
+          <Link
+            to={`/products/${product._id}`}
+            className="line-clamp-2 leading-tight"
+          >
             {product.name}
           </Link>
         </h2>
@@ -37,14 +50,11 @@ const Product = ({ product }) => {
           {/* <div className="tag line-through">
             Rs. {formatPrice(product.price)}
           </div> */}
-          <div className="tag">{product.quantity} in Stock</div>
+          <div className="tag">{product.minimumOrder} min. order</div>
           <div className="tag">{product.category?.name}</div>
         </div>
         <div className="action flex gap-3">
-          <button
-            className="btn btn-primary"
-            onClick={() => dispatch(addToCart(product))}
-          >
+          <button className="btn btn-primary" onClick={handleClick}>
             Add to cart
           </button>
           <Link to={`/products/${product._id}`}>

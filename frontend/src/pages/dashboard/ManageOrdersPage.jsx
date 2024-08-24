@@ -23,6 +23,7 @@ import { MdPayments } from "react-icons/md";
 
 const ManageOrdersPage = () => {
   const { data: orders, error, isLoading, refetch } = useOrders();
+
   const {
     mutate: deleteOrder,
     isLoading: deleteLoading,

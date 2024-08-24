@@ -23,7 +23,7 @@ const ticketSchema = new mongoose.Schema(
       ref: "Order",
       required: true,
     },
-    sellerId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

@@ -5,9 +5,9 @@ import Loader from "../../components/Loader";
 
 const ManageSellerTicketsPage = () => {
   const { data: tickets, isLoading, error } = useAllTickets();
-
+  console.log("seller tickets", tickets);
   if (isLoading) return <Loader />;
-  if (error) return <div>Error: {error.message}</div>;
+  if (error) return <div>Error aayo nee: {error.message}</div>;
 
   return (
     <div className="p-5">

@@ -1,3 +1,4 @@
+// app.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -5,7 +6,6 @@ dotenv.config();
 
 const connectDB = require("./config/db");
 const sellerRoutes = require("./routes/sellerRoutes");
-const adminRoutes = require("./routes/adminRoutes");
 const productRoutes = require("./routes/productRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
@@ -34,7 +34,6 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/sellers", sellerRoutes);
-app.use("/api/admins", adminRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -44,4 +43,4 @@ app.use("/api/tickets", ticketRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = app;
+module.exports = app; // Export the app

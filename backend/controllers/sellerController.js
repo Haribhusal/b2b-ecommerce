@@ -78,6 +78,62 @@ const verifySeller = asyncHandler(async (req, res) => {
   });
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  const resetToken = user.generatePasswordResetToken();
+  await user.save();
+
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/sellers/reset-password/${resetToken}`;
+  const message = `You are receiving this email because you (or someone else) has requested the reset of your password. Please click the following link to complete the process: ${resetUrl}`;
+
+  try {
+    await sendEmail({
+      to: email,
+      subject: "Password Reset Request",
+      text: message,
+    });
+
+    res.status(200).json({
+      message: "Password reset email sent",
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpire = undefined;
+    await user.save();
+
+    res.status(500);
+    throw new Error("Email could not be sent");
+  }
+});
+
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!(await user.matchPassword(currentPassword))) {
+    res.status(401);
+    throw new Error("Current password is incorrect");
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({
+    message: "Password changed successfully",
+  });
+});
+
 // @desc    Authenticate seller & get token
 // @route   POST /api/sellers/login
 // @access  Public

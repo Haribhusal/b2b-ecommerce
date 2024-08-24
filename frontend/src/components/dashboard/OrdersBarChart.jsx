@@ -15,16 +15,15 @@ import Loader from "../Loader";
 const OrdersBarChart = () => {
   const { data: orders, isLoading, error } = useOrders();
 
-  // Process data for the chart
   const chartData = useMemo(() => {
     if (!orders) return [];
 
     const data = orders.reduce((acc, order) => {
-      const date = format(parseISO(order.createdAt), "yyyy-MM-dd"); // Format date as 'YYYY-MM-DD'
+      const date = format(parseISO(order.createdAt), "yyyy-MM-dd");
       if (!acc[date]) {
         acc[date] = { day: date, totalAmount: 0 };
       }
-      acc[date].totalAmount += order.totalPrice; // Sum totalPrice for each day
+      acc[date].totalAmount += order.totalPrice;
       return acc;
     }, {});
 
@@ -49,7 +48,7 @@ const OrdersBarChart = () => {
         <XAxis dataKey="day" />
         <YAxis />
         <Tooltip />
-        <Bar dataKey="totalAmount" fill="#f97316 " />
+        <Bar dataKey="totalAmount" fill="#f97316" />
       </BarChart>
     </ResponsiveContainer>
   );

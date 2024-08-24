@@ -8,6 +8,10 @@ const orderSchema = new mongoose.Schema(
       enum: ["Pending", "Accepted", "Rejected"],
       default: "Pending",
     },
+    tickets: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Ticket",
+    },
     items: [
       {
         product: {
@@ -18,6 +22,11 @@ const orderSchema = new mongoose.Schema(
         name: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
+        images: [
+          {
+            url: { type: String, required: true },
+          },
+        ],
       },
     ],
     totalItems: { type: Number, required: true },

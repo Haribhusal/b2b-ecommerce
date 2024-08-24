@@ -36,7 +36,7 @@ const SearchResults = () => {
 
   return (
     <section className="px-5 md:px-10 py-3 md:py-5">
-      <div className="heading flex justify-between">
+      <div className="heading flex justify-between items-center mb-3">
         <h2 className="text-xl">Search Results</h2>
         <div className="filters">
           <select

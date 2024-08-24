@@ -10,7 +10,6 @@ const handleErrorResponse = async (response) => {
   const errorData = await response.json();
   throw new Error(errorData.message || "An error occurred");
 };
-
 // Fetch all tickets from the backend
 const fetchAllTickets = async () => {
   const response = await fetch(`${BASE_URL}/tickets`, {
@@ -32,7 +31,6 @@ export const useAllTickets = () => {
     retry: 1, // Retry once on failure
   });
 };
-
 // create tickets
 const createTicket = async (newTicket) => {
   const response = await fetch(`${BASE_URL}/tickets`, {
@@ -85,10 +83,8 @@ export const useTicketsByOrder = (orderId) => {
     retry: 1,
   });
 };
-
-const addMessageToTicket = async ({ id, message }) => {
-  console.log("received to backend", id, message);
-  const response = await fetch(`${BASE_URL}/tickets/${id}/messages`, {
+const addMessageToTicket = async ({ ticketId, message }) => {
+  const response = await fetch(`${BASE_URL}/tickets/${ticketId}/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -118,8 +114,8 @@ export const useAddMessageToTicket = () => {
 };
 
 // update ticket status
-const updateTicketStatus = async ({ ticketId, status }) => {
-  const response = await fetch(`${BASE_URL}/tickets/${ticketId}/status`, {
+const updateTicketStatus = async ({ id, status }) => {
+  const response = await fetch(`${BASE_URL}/tickets/${id}/status`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -140,7 +136,7 @@ export const useUpdateTicketStatus = () => {
   return useMutation({
     mutationFn: updateTicketStatus,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries(["tickets", variables.ticketId]); // Invalidate the specific ticket query
+      queryClient.invalidateQueries(["tickets", variables.id]); // Invalidate the specific ticket query
     },
     onError: (error) => {
       console.error("Error updating ticket status:", error);
@@ -148,8 +144,8 @@ export const useUpdateTicketStatus = () => {
   });
 };
 
-const fetchTicketById = async (ticketId) => {
-  const response = await fetch(`${BASE_URL}/tickets/${ticketId}`, {
+const fetchTicketById = async (id) => {
+  const response = await fetch(`${BASE_URL}/tickets/${id}`, {
     headers: getAuthHeaders(),
   });
 
@@ -161,11 +157,11 @@ const fetchTicketById = async (ticketId) => {
   return response.json();
 };
 
-export const useTicketById = (ticketId) => {
+export const useTicketById = (id) => {
   return useQuery({
-    queryKey: ["ticket", ticketId],
-    queryFn: () => fetchTicketById(ticketId),
-    enabled: !!ticketId, // Only run the query if ticketId is available
+    queryKey: ["ticket", id],
+    queryFn: () => fetchTicketById(id),
+    enabled: !!id, // Only run the query if id is available
     staleTime: 1000 * 60 * 10, // Data is fresh for 10 minutes
     cacheTime: 1000 * 60 * 30, // Cached for 30 minutes
     retry: 1, // Retry once on failure

@@ -12,7 +12,7 @@ import ProductsPage from "./pages/ProductsPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
-import ProductDetail from "./components/ProductDetail.jsx";
+import ProductDetailPage from "./pages/ProductDetailPage.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx"; // Import ProtectedRoute
 import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
@@ -30,6 +30,7 @@ import AddSellerPage from "./pages/dashboard/AddSellerPage.jsx";
 import ManageCompaniesPage from "./pages/dashboard/ManageCompaniesPage.jsx";
 import EditCompanyPage from "./pages/dashboard/EditCompanyPage.jsx";
 import AddCompanyPage from "./pages/dashboard/AddCompanyPage.jsx";
+import ViewCompanyDetailsPage from "./pages/dashboard/ViewCompanyDetailsPage.jsx";
 import ManageOrdersPage from "./pages/dashboard/ManageOrdersPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import EditOrderPage from "./pages/dashboard/EditOrderPage.jsx";
@@ -68,7 +69,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/products/:productId",
-        element: <ProductDetail />,
+        element: <ProductDetailPage />,
       },
       {
         path: "/login",
@@ -140,6 +141,10 @@ const router = createBrowserRouter([
       {
         path: "manage-companies",
         element: <ManageCompaniesPage />,
+      },
+      {
+        path: "view-company/:id",
+        element: <ViewCompanyDetailsPage />,
       },
       {
         path: "edit-company/:id",

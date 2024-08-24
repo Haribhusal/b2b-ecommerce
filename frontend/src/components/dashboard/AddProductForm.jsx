@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAddProduct } from "../../hooks/useProducts";
@@ -22,7 +22,9 @@ const validationSchema = Yup.object({
   category: Yup.string().required("Category is required"),
   company: Yup.string().required("Company is required"),
   images: Yup.mixed().required("At least one image is required"),
-
+  minimumOrder: Yup.number()
+    .min(1, "Minimum order quantity must be at least 1")
+    .required("Minimum order quantity is required"),
   quantity: Yup.number()
     .min(0, "Quantity must be a positive number")
     .required("Quantity is required"),
@@ -30,7 +32,10 @@ const validationSchema = Yup.object({
 
 const ProductAddForm = () => {
   const navigate = useNavigate();
-  const { mutate: addProduct, isLoading, isError, error } = useAddProduct();
+  const [minimumOrder, setMinimumOrder] = useState(1); // Initial minimum order
+
+  const { mutate: addProduct, isPending, isError, error } = useAddProduct();
+  console.log("isLoading", isPending);
   const {
     data: categories,
     isLoading: isCategoriesLoading,
@@ -53,6 +58,7 @@ const ProductAddForm = () => {
       company: "",
       quantity: "",
       images: null,
+      minimumOrder,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -134,6 +140,20 @@ const ProductAddForm = () => {
         />
         {formik.errors.price && (
           <div className="error">{formik.errors.price}</div>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="minimumOrder">Minimum Order</label>
+        <input
+          id="minimumOrder"
+          name="minimumOrder"
+          type="number"
+          onChange={formik.handleChange}
+          value={formik.values.minimumOrder}
+        />
+        {formik.errors.minimumOrder && (
+          <div className="error">{formik.errors.minimumOrder}</div>
         )}
       </div>
 
@@ -268,10 +288,10 @@ const ProductAddForm = () => {
       <button
         className="btn btn-primary flex gap-3 items-center"
         type="submit"
-        disabled={isLoading}
+        disabled={isPending}
       >
-        {isLoading ? "Adding Product..." : "Add Product"}{" "}
-        {isLoading && <ImSpinner3 className="animate-spin" />}
+        {isPending ? "Adding Product..." : "Add Product"}{" "}
+        {isPending && <ImSpinner3 className="animate-spin" />}
       </button>
 
       {isError && <div className="error">Error: {error.message}</div>}

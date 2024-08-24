@@ -142,7 +142,7 @@ const CartPage = () => {
                       Rs. {formatPrice(product.finalPrice * product.quantity)}
                     </h3>
                     <div className="calc">
-                      {product.quantity} X Rs. {formatPrice(product.price)}
+                      {product.quantity} X Rs. {formatPrice(product.finalPrice)}
                     </div>
                   </div>
                 </div>

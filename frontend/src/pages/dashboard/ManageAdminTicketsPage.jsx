@@ -2,10 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAllTickets } from "../../hooks/useTickets";
 import Loader from "../../components/Loader";
+import { IoIosTime } from "react-icons/io";
+import { formatDistanceToNow } from "date-fns"; // Import from date-fns
+import { FaUser, FaInfoCircle } from "react-icons/fa";
+import { RiBillFill } from "react-icons/ri";
 
 const ManageAdminTicketsPage = () => {
   const { data: tickets, isLoading, error } = useAllTickets();
-
+  console.log(tickets);
   if (isLoading) return <Loader />;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -19,8 +23,17 @@ const ManageAdminTicketsPage = () => {
           <div className="info">
             <h4 className="font-bold mb-1">{ticket.subject}</h4>
             <div className="meta flex gap-3 text-sm">
-              <span className="tag">Status: {ticket.status}</span>
-              <span className="tag">Order ID: {ticket.orderId}</span>
+              <span className="tag">
+                <FaInfoCircle /> {ticket.status}
+              </span>
+              <span className="tag">
+                <FaUser /> {ticket.user.name}
+              </span>
+
+              <div className="tag">
+                <IoIosTime />
+                {formatDistanceToNow(new Date(ticket.updatedAt))} ago
+              </div>
             </div>
           </div>
           <Link to={`/dashboard/view-ticket/${ticket._id}`}>

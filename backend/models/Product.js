@@ -47,6 +47,7 @@ const productSchema = new mongoose.Schema(
     finalPrice: {
       type: Number,
     },
+    minimumOrder: { type: Number, default: 1 },
     images: [
       {
         url: { type: String, required: true },

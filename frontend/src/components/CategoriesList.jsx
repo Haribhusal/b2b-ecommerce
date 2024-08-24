@@ -6,7 +6,7 @@ import Product from "./Product";
 import { FaAngleLeft, FaPlus } from "react-icons/fa";
 
 const CategoriesList = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [showItems, setShowItems] = useState(12);
 
   const {
@@ -19,13 +19,21 @@ const CategoriesList = () => {
     data: products,
     isLoading: productsLoading,
     error: productsError,
-  } = useCategoryProducts(selectedCategory);
+  } = useCategoryProducts(
+    selectedCategories.length > 0
+      ? selectedCategories[selectedCategories.length - 1]
+      : null
+  );
 
   if (categoriesLoading) return <Loader />;
   if (categoriesError) return <div>Error: {categoriesError.message}</div>;
 
   const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId);
+    setSelectedCategories([...selectedCategories, categoryId]);
+  };
+
+  const handleBackClick = () => {
+    setSelectedCategories(selectedCategories.slice(0, -1));
   };
 
   const renderCategories = (categories, parentId = null) => {
@@ -40,7 +48,14 @@ const CategoriesList = () => {
     return (
       <ul className="flex flex-wrap p-3 gap-3 items-center">
         {filteredCategories.slice(0, showItems).map((category) => (
-          <li key={category._id} className="flex gap-3 items-center">
+          <li
+            key={category._id}
+            className={`flex gap-3 items-center ${
+              selectedCategories[selectedCategories.length - 1] === category._id
+                ? "bg-blue-500 text-white rounded-md px-3 py-2"
+                : ""
+            }`}
+          >
             <div
               onClick={() => handleCategoryClick(category._id)}
               style={{ cursor: "pointer" }}
@@ -48,8 +63,8 @@ const CategoriesList = () => {
               {category.name}
             </div>
             <div className="child bg-white rounded-md">
-              {selectedCategory === category._id &&
-                renderCategories(categories, category._id)}
+              {selectedCategories[selectedCategories.length - 1] ===
+                category._id && renderCategories(categories, category._id)}
             </div>
           </li>
         ))}
@@ -74,23 +89,21 @@ const CategoriesList = () => {
     );
   };
 
-  const parentCategoryId = selectedCategory
-    ? categories.find((cat) => cat._id === selectedCategory)?.parent?._id
-    : null;
-
   return (
     <div className="">
-      <div className="wrap flex  px-5 md:px-10 bg-orange-100 items-center">
-        {selectedCategory && parentCategoryId && (
-          <button
-            className=""
-            onClick={() => setSelectedCategory(parentCategoryId)}
-          >
+      <div className="wrap flex px-5 md:px-10 text-orange-500 bg-white items-center">
+        {selectedCategories.length > 0 && (
+          <button className="flex items-center" onClick={handleBackClick}>
             <FaAngleLeft className="h-8 w-8 bg-white rounded-full p-2 flex justify-center items-center" />
           </button>
         )}
         <div className="categories-list">
-          {renderCategories(categories, parentCategoryId)}
+          {renderCategories(
+            categories,
+            selectedCategories.length > 0
+              ? selectedCategories[selectedCategories.length - 1]
+              : null
+          )}
         </div>
         <div
           className="plus absolute right-5"
@@ -100,11 +113,16 @@ const CategoriesList = () => {
         </div>
       </div>
 
-      {selectedCategory && (
-        <div className="px-5 md:px-10  py-5">
+      {selectedCategories.length > 0 && (
+        <div className="px-5 md:px-10 py-5">
           <div className="heading text-slate-600 text-xl mb-3">
             Products in{" "}
-            {categories.find((cat) => cat._id === selectedCategory)?.name}
+            {
+              categories.find(
+                (cat) =>
+                  cat._id === selectedCategories[selectedCategories.length - 1]
+              )?.name
+            }
           </div>
 
           {renderProducts(products)}

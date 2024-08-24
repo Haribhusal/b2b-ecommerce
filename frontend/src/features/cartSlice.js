@@ -16,35 +16,42 @@ const cartSlice = createSlice({
       const existingItem = state.cartItems.find(
         (cartItem) => cartItem._id === item._id
       );
+
       if (existingItem) {
-        existingItem.quantity += 1;
+        // If the item already exists in the cart
+        if (existingItem.quantity + 1 >= item.minimumOrder) {
+          // Check if adding one more quantity will exceed the minimum order
+          existingItem.quantity += 1; // Increment quantity
+          state.totalQuantity += 1; // Update total quantity
+          state.totalPrice += item.finalPrice; // Update total price
+        } else {
+          // If adding one more quantity will not meet the minimum order
+          existingItem.quantity = item.minimumOrder; // Set quantity to minimum order
+          state.totalQuantity += item.minimumOrder - existingItem.quantity; // Update total quantity
+          state.totalPrice +=
+            (item.minimumOrder - existingItem.quantity) * item.finalPrice; // Update total price
+        }
       } else {
-        state.cartItems.push({ ...item, quantity: 1 });
-      }
-      state.totalQuantity += 1;
-      state.totalPrice += item.finalPrice;
-    },
-    removeFromCart: (state, action) => {
-      const itemIndex = state.cartItems.findIndex(
-        (item) => item._id === action.payload._id
-      );
-      if (itemIndex >= 0) {
-        state.totalQuantity -= state.cartItems[itemIndex].quantity;
-        state.totalPrice -=
-          state.cartItems[itemIndex].finalPrice *
-          state.cartItems[itemIndex].quantity;
-        state.cartItems.splice(itemIndex, 1);
+        // If the item doesn't exist in the cart
+        state.cartItems.push({ ...item, quantity: item.minimumOrder }); // Add new item with minimum order quantity
+        state.totalQuantity += item.minimumOrder; // Update total quantity
+        state.totalPrice += item.minimumOrder * item.finalPrice; // Update total price
       }
     },
+
     increaseQuantity: (state, action) => {
       const productId = action.payload;
       const item = state.cartItems.find(
         (cartItem) => cartItem._id === productId
       );
+
       if (item) {
-        item.quantity += 1;
-        state.totalQuantity += 1;
-        state.totalPrice += item.finalPrice;
+        // Check if increasing the quantity will meet the minimum order
+        if (item.quantity + 1 >= item.minimumOrder) {
+          item.quantity += 1; // Increment quantity
+          state.totalQuantity += 1; // Update total quantity
+          state.totalPrice += item.finalPrice; // Update total price
+        }
       }
     },
     decreaseQuantity: (state, action) => {
@@ -52,27 +59,51 @@ const cartSlice = createSlice({
       const item = state.cartItems.find(
         (cartItem) => cartItem._id === productId
       );
-      if (item && item.quantity > 1) {
-        item.quantity -= 1;
-        state.totalQuantity -= 1;
-        state.totalPrice -= item.finalPrice;
+
+      if (item && item.quantity > item.minimumOrder) {
+        // Only decrease if quantity is greater than minimum order
+        item.quantity -= 1; // Decrement quantity
+        state.totalQuantity -= 1; // Update total quantity
+        state.totalPrice -= item.finalPrice; // Update total price
       }
     },
-    clearCart: (state) => {
-      state.cartItems = [];
-      state.totalQuantity = 0;
-      state.totalPrice = 0;
+    removeFromCart: (state, action) => {
+      const itemIndex = state.cartItems.findIndex(
+        (item) => item._id === action.payload._id
+      );
+
+      if (itemIndex >= 0) {
+        const item = state.cartItems[itemIndex];
+        state.totalQuantity -= item.quantity; // Decrease total quantity
+        state.totalPrice -= item.finalPrice * item.quantity; // Decrease total price
+        state.cartItems.splice(itemIndex, 1); // Remove item from cart
+      }
     },
     setQuantity: (state, action) => {
       const { productId, quantity } = action.payload;
       const item = state.cartItems.find(
         (cartItem) => cartItem._id === productId
       );
+
       if (item) {
-        state.totalQuantity += quantity - item.quantity;
-        state.totalPrice += (quantity - item.quantity) * item.finalPrice;
-        item.quantity = quantity;
+        if (quantity < item.minimumOrder) {
+          // If the new quantity is less than minimumOrder, set to minimumOrder
+          state.totalQuantity += item.minimumOrder - item.quantity; // Adjust total quantity
+          state.totalPrice +=
+            (item.minimumOrder - item.quantity) * item.finalPrice; // Adjust total price
+          item.quantity = item.minimumOrder; // Set quantity to minimumOrder
+        } else {
+          // Update total quantity and price based on the new quantity
+          state.totalQuantity += quantity - item.quantity; // Update total quantity
+          state.totalPrice += (quantity - item.quantity) * item.finalPrice; // Update total price
+          item.quantity = quantity; // Set new quantity
+        }
       }
+    },
+    clearCart: (state) => {
+      state.cartItems = []; // Clear cart items
+      state.totalQuantity = 0; // Reset quantity
+      state.totalPrice = 0; // Reset price
     },
   },
 });

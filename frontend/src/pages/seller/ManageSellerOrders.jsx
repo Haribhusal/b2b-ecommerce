@@ -33,7 +33,11 @@ const ManageSellerOrders = () => {
               </div>
               <div className="info w-full">
                 <h2 className="text-xl font-semibold text-gray-700">
-                  <span className="capitalize">{order.user?.name} </span>
+                  {order.items.slice(0, 5).map((item) => (
+                    <span key={item._id} className="capitalize mr-2">
+                      {item.name.slice(0, 50)} /
+                    </span>
+                  ))}
                   <span className="text-sm font-normal">
                     <Link to={`/dashboard/order-details/${order._id}`}>
                       #{order._id}

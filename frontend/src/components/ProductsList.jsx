@@ -6,7 +6,7 @@ import Product from "./../components/Product";
 
 const ProductsList = () => {
   const { data: products, error, isLoading } = useProducts();
-
+console.log(products)
   if (isLoading) {
     return <Loader />;
   }
