@@ -50,7 +50,7 @@ const Product = ({ product }) => {
           {/* <div className="tag line-through">
             Rs. {formatPrice(product.price)}
           </div> */}
-          <div className="tag">{product.minimumOrder} min. order</div>
+          <div className="tag">Order {product.minimumOrder}</div>
           <div className="tag">{product.category?.name}</div>
         </div>
         <div className="action flex gap-3">

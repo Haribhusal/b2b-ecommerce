@@ -1,18 +1,20 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { FaAngleLeft } from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProducts";
 import { addToCart } from "../features/cartSlice";
 import Loader from "../components/Loader";
 import { IoMdPricetag } from "react-icons/io";
 import { formatPrice } from "../utils/formatPrice";
 import { useCategoryProducts } from "../hooks/useProducts";
+import toast from "react-hot-toast";
 import Product from "../components/Product";
 import { HiSquare3Stack3D } from "react-icons/hi2";
 
 const ProductDetailPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { productId } = useParams();
   const { data: product, error, isLoading } = useProduct(productId);
   const {
@@ -20,6 +22,15 @@ const ProductDetailPage = () => {
     isLoading: productsLoading,
     error: productsError,
   } = useCategoryProducts(product?.category._id);
+
+  const handleClick = () => {
+    if (localStorage.getItem("token")) {
+      dispatch(addToCart(product));
+    } else {
+      navigate("/login");
+      toast.error("Please login to add item in the cart");
+    }
+  };
 
   // Loading state
   if (isLoading) {
@@ -109,10 +120,7 @@ const ProductDetailPage = () => {
                   </span>
                 </div>
               )}
-              <button
-                className="btn btn-primary"
-                onClick={() => dispatch(addToCart(product))}
-              >
+              <button className="btn btn-primary" onClick={handleClick}>
                 Add to cart
               </button>
             </div>

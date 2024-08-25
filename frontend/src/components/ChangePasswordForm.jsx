@@ -1,7 +1,7 @@
 import React from "react";
+import { useChangePassword } from "../hooks/useAuth";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useChangePassword } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import { ImSpinner3 } from "react-icons/im";
 
@@ -14,7 +14,7 @@ const validationSchema = Yup.object({
     .required("New password is required"),
 });
 
-const ChangePasswordForm = () => {
+const ChangePassword = () => {
   const {
     mutate: changePassword,
     isLoading,
@@ -30,8 +30,8 @@ const ChangePasswordForm = () => {
     validationSchema,
     onSubmit: (values) => {
       changePassword(values, {
-        onSuccess: (data) => {
-          toast.success(data.message || "Password changed successfully");
+        onSuccess: () => {
+          toast.success("Password changed successfully");
         },
         onError: (error) => {
           toast.error(error.message || "An error occurred");
@@ -48,7 +48,6 @@ const ChangePasswordForm = () => {
           id="currentPassword"
           name="currentPassword"
           type="password"
-          placeholder="Enter current password"
           onChange={formik.handleChange}
           value={formik.values.currentPassword}
         />
@@ -63,7 +62,6 @@ const ChangePasswordForm = () => {
           id="newPassword"
           name="newPassword"
           type="password"
-          placeholder="Enter new password"
           onChange={formik.handleChange}
           value={formik.values.newPassword}
         />
@@ -72,13 +70,12 @@ const ChangePasswordForm = () => {
         )}
       </div>
 
-      <button
-        className="btn btn-primary flex gap-3 items-center"
-        type="submit"
-        disabled={isLoading}
-      >
-        Change Password
-        {isLoading && <ImSpinner3 className="animate-spin" />}
+      <button type="submit" disabled={isLoading} className="btn btn-primary">
+        {isLoading ? (
+          <ImSpinner3 className="animate-spin" />
+        ) : (
+          "Change Password"
+        )}
       </button>
 
       {isError && <div className="error">Error: {error.message}</div>}
@@ -86,4 +83,4 @@ const ChangePasswordForm = () => {
   );
 };
 
-export default ChangePasswordForm;
+export default ChangePassword;

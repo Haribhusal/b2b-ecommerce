@@ -17,7 +17,7 @@ const LoginPage = () => {
               Register Now <FaAngleRight />{" "}
             </span>
           </Link>
-          <Link to="/reset-password" className="flex flex-col mt-3">
+          <Link to="/forgot-password" className="flex flex-col mt-3">
             Forgot password?
             <span className="text-orange-500 flex  items-center">
               Reset Now <FaAngleRight />{" "}

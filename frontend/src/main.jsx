@@ -47,6 +47,10 @@ import SellerOrderDetailsPage from "./pages/seller/SellerOrderDetailsPage.jsx";
 import ManageSellerTicketsPage from "./pages/seller/ManageSellerTicketsPage.jsx";
 import AddTicketPage from "./pages/seller/AddTicketPage.jsx";
 import TicketDetailsPage from "./pages/seller/TicketDetailsPage.jsx";
+
+//componentns
+import ForgotPassword from "./components/ForgotPasswordForm.jsx";
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -79,7 +83,10 @@ const router = createBrowserRouter([
         path: "/register",
         element: <RegisterPage />,
       },
-
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
       {
         path: "/categories",
         element: <CategoriesPage />,

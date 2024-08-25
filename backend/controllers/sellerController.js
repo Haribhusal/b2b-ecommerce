@@ -78,17 +78,40 @@ const verifySeller = asyncHandler(async (req, res) => {
   });
 });
 
+const changePassword = asyncHandler(async (req, res) => {
+  console.log("here");
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user._id);
+  console.log("user", user);
+
+  if (!(await user.matchPassword(currentPassword))) {
+    res.status(401);
+    throw new Error("Current password is incorrect");
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({
+    message: "Password changed successfully",
+  });
+});
+
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   const user = await User.findOne({ email });
+  console.log("userrr", user);
 
   if (!user) {
     res.status(404);
     throw new Error("User not found");
   }
 
-  const resetToken = user.generatePasswordResetToken();
+  const resetToken = generateToken(user._id);
+  console.log(resetToken);
+  user.resetToken = resetToken;
   await user.save();
 
   const resetUrl = `${req.protocol}://${req.get(
@@ -116,21 +139,29 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 });
 
-const changePassword = asyncHandler(async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
+const resetPassword = asyncHandler(async (req, res) => {
+  const passwordResetToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
 
-  const user = await User.findById(req.user._id);
+  const user = await User.findOne({
+    passwordResetToken,
+    passwordResetExpire: { $gt: Date.now() },
+  });
 
-  if (!(await user.matchPassword(currentPassword))) {
-    res.status(401);
-    throw new Error("Current password is incorrect");
+  if (!user) {
+    res.status(400);
+    throw new Error("Invalid or expired token");
   }
 
-  user.password = newPassword;
+  user.password = req.body.password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpire = undefined;
   await user.save();
 
   res.status(200).json({
-    message: "Password changed successfully",
+    message: "Password reset successful",
   });
 });
 
@@ -261,4 +292,7 @@ module.exports = {
   updateSeller,
   deleteSeller,
   addSeller,
+  changePassword,
+  forgotPassword,
+  resetPassword,
 };

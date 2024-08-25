@@ -6,6 +6,7 @@ const BASE_URL = "http://localhost:5000/api/sellers";
 // Utility function to get headers
 const getAuthHeaders = () => ({
   "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in localStorage
 });
 
 // Handle errors from API responses
@@ -33,7 +34,9 @@ const loginUser = async (userData) => {
 const registerUser = async (userData) => {
   const response = await fetch(`${BASE_URL}/register`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(userData),
   });
 
@@ -48,7 +51,9 @@ const registerUser = async (userData) => {
 const changePassword = async (passwordData) => {
   const response = await fetch(`${BASE_URL}/change-password`, {
     method: "PUT",
-    headers: getAuthHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(passwordData),
   });
 
@@ -63,7 +68,9 @@ const changePassword = async (passwordData) => {
 const resetPassword = async ({ token, password }) => {
   const response = await fetch(`${BASE_URL}/reset-password/${token}`, {
     method: "PUT",
-    headers: getAuthHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ password }),
   });
 
@@ -78,7 +85,9 @@ const resetPassword = async ({ token, password }) => {
 const forgotPassword = async (emailData) => {
   const response = await fetch(`${BASE_URL}/forgot-password`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(emailData),
   });
 
@@ -150,3 +159,5 @@ export const useLogoutUser = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 };
+
+// Change Password

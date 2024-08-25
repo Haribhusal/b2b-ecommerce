@@ -11,6 +11,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  verificationToken: { type: String },
+  passwordResetToken: { type: String },
+  passwordResetExpire: { type: Date },
   isApproved: {
     type: Boolean,
     default: false, // Set to false by default

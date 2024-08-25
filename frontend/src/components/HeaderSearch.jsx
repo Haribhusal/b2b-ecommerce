@@ -39,7 +39,7 @@ const HeaderSearch = () => {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex gap-3 items-center py-3 md:px-10 shadow-inner shadow-orange-100"
+      className="flex gap-3 items-center py-3 md:px-10 shadow-inner bg-orange-50 shadow-orange-100"
     >
       <div className="flex-3">Search or Filter Products</div>
       <input
